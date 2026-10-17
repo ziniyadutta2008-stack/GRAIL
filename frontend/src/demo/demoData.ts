@@ -138,6 +138,7 @@ export function evidenceQualifier(mapping: IsoMapping): string {
   const freshness = mapping.evidence_freshness
   if (freshness === 'current') return 'validated_on' in mapping ? 'Evidence current, independently validated' : 'Evidence current'
   if (freshness === 'stale') return 'Evidence stale'
+  if (freshness === 'partial') return 'business-impact accepted; bias and fairness missing'
   return 'Evidence missing'
 }
 

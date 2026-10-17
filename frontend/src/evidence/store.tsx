@@ -58,6 +58,9 @@ export interface EvidenceItem {
   validator: string
   linkedGate: string
   linkedFinding: string
+  /** Overall system decision when linkedGate is a lifecycle stage, not the gate label. */
+  currentSystemDecision: string
+  decisionContext: string
   testProcedure: string
   sample: string
   designEffectiveness: Effectiveness
@@ -166,15 +169,19 @@ function normalise(record: EvidenceItem): EvidenceItem {
     validator: record.validator ?? '',
     linkedGate: record.linkedGate ?? '',
     linkedFinding: record.linkedFinding ?? '',
+    currentSystemDecision: record.currentSystemDecision ?? '',
+    decisionContext: record.decisionContext ?? '',
     lifecycle: record.lifecycle ?? (record.supersededBy ? 'Superseded' : record.state === 'Accepted' ? 'Approved' : 'Quarantined'),
     validatedAt: record.validatedAt ?? '',
     auditEvents: record.auditEvents ?? [],
   }
 }
 
+/** Always refresh known seed records so demo copy stays aligned with the product seed. */
 function withSeed(items: EvidenceItem[]): EvidenceItem[] {
-  if (items.some((item) => item.id === 'EVD-0001')) return items
-  return [...copySeed(), ...items]
+  const seedIds = new Set(SEEDED_EVIDENCE.map((item) => item.id))
+  const others = items.filter((item) => !seedIds.has(item.id))
+  return [...copySeed(), ...others]
 }
 
 function readItems(): EvidenceItem[] {
@@ -234,6 +241,8 @@ export function EvidenceProvider({ children }: { children: ReactNode }) {
           validator: '',
           linkedGate: draft.linkedGate?.trim() ?? '',
           linkedFinding: draft.linkedFinding?.trim() ?? '',
+          currentSystemDecision: '',
+          decisionContext: '',
           testProcedure: draft.testProcedure.trim(),
           sample: draft.sample.trim(),
           designEffectiveness: 'Not assessed',

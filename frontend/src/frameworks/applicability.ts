@@ -37,18 +37,39 @@ export interface ApplicabilityReport {
   notAssessed: string
 }
 
-const PLACES = ['United Kingdom', 'European Union', 'France', 'United States', 'Singapore', 'South Korea'] as const
+const PLACES = [
+  'United Kingdom',
+  'European Union',
+  'France',
+  'United States',
+  'Singapore',
+  'South Korea',
+  'China',
+  'Japan',
+  'Canada',
+  'Brazil',
+  'Australia',
+  'India',
+  'United Arab Emirates',
+] as const
 
 const GLOBAL = /\b(global|worldwide|international|multi-country|multi country|all jurisdictions|all regions)\b/i
 const UK = /\b(united kingdom|great britain|britain|england|scotland|wales|northern ireland|\buk\b|\bpra\b|\bfca\b)\b/i
 const FRANCE = /\b(france|french|\bcnil\b)\b/i
 const EU = /\b(european union|\beu\b|\beea\b|eurozone|euro area|\becb\b|germany|german|italy|italian|spain|spanish|netherlands|dutch|ireland|irish|belgium|sweden|poland)\b/i
-const US = /\b(united states|u\.s\.a\.|\busa\b|u\.s\.|colorado|new york|california|federal reserve|sr 11-7)\b/i
+const US = /\b(united states|u\.s\.a\.|\busa\b|u\.s\.|colorado|new york|illinois|california|federal reserve|sr 11-7)\b/i
 const SINGAPORE = /\b(singapore|\bmas\b|\bimda\b|\bpdpa\b)\b/i
 const KOREA = /\b(south korea|republic of korea|\bkorea\b|korean)\b/i
+const CHINA = /\b(china|chinese|\bcac\b|beijing|shanghai)\b/i
+const JAPAN = /\b(japan|japanese|\bmeti\b|\bcao\b)\b/i
+const CANADA = /\b(canada|canadian|quebec|\baida\b)\b/i
+const BRAZIL = /\b(brazil|brazilian|\blgpd\b)\b/i
+const AUSTRALIA = /\b(australia|australian)\b/i
+const INDIA = /\b(india|indian|\bmeity\b)\b/i
+const UAE = /\b(united arab emirates|\buae\b|dubai|abu dhabi)\b/i
 const FINANCIAL = /\b(financ\w*|bank|credit|payment|insurance|trading|claims|investment|prudential|underwriting)\b/i
 const HEALTH = /\b(health|clinic|clinical|diagnos|medical|patient|hospital)\b/i
-const EMPLOYMENT = /\b(hiring|recruitment|employment decision|automated employment)\b/i
+const EMPLOYMENT = /\b(hiring|recruitment|employment decision|automated employment|video interview)\b/i
 const CREDIT = /\b(creditworth|credit scor|credit decision|loan approval)\b/i
 const LLM = /\b(llm|language model|generative|chatbot|copilot|\bgpt\b)\b/i
 const PERSONAL = /\b(personal|customer|health|financial|patient|employee data|account data|\bpii\b)\b/i
@@ -72,6 +93,13 @@ function placesFrom(text: string): string[] {
   if (US.test(text)) places.push('United States')
   if (SINGAPORE.test(text)) places.push('Singapore')
   if (KOREA.test(text)) places.push('South Korea')
+  if (CHINA.test(text)) places.push('China')
+  if (JAPAN.test(text)) places.push('Japan')
+  if (CANADA.test(text)) places.push('Canada')
+  if (BRAZIL.test(text)) places.push('Brazil')
+  if (AUSTRALIA.test(text)) places.push('Australia')
+  if (INDIA.test(text)) places.push('India')
+  if (UAE.test(text)) places.push('United Arab Emirates')
   return places
 }
 
@@ -126,6 +154,38 @@ export function assessApplicability(subject: ApplicabilitySubject): Applicabilit
     rationale: 'Inclusive growth, human-centred values, transparency, robustness and accountability are screened as principles, not as a statute.',
   })
   add({
+    id: 'unesco',
+    name: 'UNESCO Recommendation on the Ethics of Artificial Intelligence',
+    jurisdiction: 'International',
+    kind: 'Framework',
+    outcome: 'Screened',
+    rationale: 'UNESCO soft-law ethics recommendation is screened for every system. It is not a statute.',
+  })
+  add({
+    id: 'coe-ai',
+    name: 'Council of Europe Framework Convention on AI',
+    jurisdiction: 'International',
+    kind: 'Law',
+    outcome: 'Screened',
+    rationale: 'The Framework Convention is screened as an international treaty track. Confirm ratifications before treating Party duties as in force for a geography.',
+  })
+  add({
+    id: 'g7-hiroshima',
+    name: 'G7 Hiroshima AI Process',
+    jurisdiction: 'International',
+    kind: 'Framework',
+    outcome: 'Screened',
+    rationale: 'Voluntary Hiroshima Process code for advanced AI systems. Alignment is not claimed.',
+  })
+  add({
+    id: 'ieee-ethics',
+    name: 'IEEE ethically aligned design and AI standards',
+    jurisdiction: 'International',
+    kind: 'Framework',
+    outcome: 'Screened',
+    rationale: 'IEEE voluntary ethics and 7000-series standards are screened as professional references, not as law.',
+  })
+  add({
     id: 'ms-rai',
     name: 'Microsoft Responsible AI Standard v2',
     jurisdiction: 'Organization reference',
@@ -153,6 +213,13 @@ export function assessApplicability(subject: ApplicabilitySubject): Applicabilit
   const inUs = unique.includes('United States')
   const inSg = unique.includes('Singapore')
   const inKr = unique.includes('South Korea')
+  const inCn = unique.includes('China')
+  const inJp = unique.includes('Japan')
+  const inCa = unique.includes('Canada')
+  const inBr = unique.includes('Brazil')
+  const inAu = unique.includes('Australia')
+  const inIn = unique.includes('India')
+  const inUae = unique.includes('United Arab Emirates')
 
   if (inUk) {
     add({
@@ -247,7 +314,7 @@ export function assessApplicability(subject: ApplicabilitySubject): Applicabilit
       jurisdiction: 'United States',
       kind: 'Screening note',
       outcome: 'Screened',
-      rationale: 'No comprehensive US federal AI statute identified; assess applicable sectoral laws, state AI laws and agency requirements. Instruments that the recorded use indicates, such as SR 11-7, NYC Local Law 144 or the Colorado Artificial Intelligence Act, are listed separately. NIST AI RMF remains in the international set. This screen is not a legal opinion.',
+      rationale: 'No comprehensive US federal AI statute identified; assess applicable sectoral laws, state AI laws and agency requirements. Instruments that the recorded use indicates, such as SR 11-7, NYC Local Law 144, the Illinois Artificial Intelligence Video Interview Act or the Colorado Artificial Intelligence Act, are listed separately. NIST AI RMF remains in the international set. This screen is not a legal opinion.',
     })
     if (financial) {
       add({
@@ -262,13 +329,25 @@ export function assessApplicability(subject: ApplicabilitySubject): Applicabilit
     if (EMPLOYMENT.test(text)) {
       add({
         id: 'nyc-ll144',
-        name: 'NYC Local Law 144',
+        name: 'NYC Local Law 144 (AEDT)',
         jurisdiction: 'United States',
         kind: 'Law',
         outcome: /new york/i.test(text) ? 'Gap' : 'Screened',
         rationale: /new york/i.test(text)
           ? 'An employment decision tool is described for New York. A bias-audit record for Local Law 144 is not attached.'
-          : 'An employment use is described in the United States. Local Law 144 can apply in New York City. Confirm that geography before treating it as in scope.',
+          : 'An employment use is described in the United States. Local Law 144 can apply to automated employment decision tools in New York City. Confirm that geography before treating it as in scope.',
+      })
+    }
+    if (/illinois/i.test(text) || /video interview/i.test(text)) {
+      add({
+        id: 'illinois-video',
+        name: 'Illinois Artificial Intelligence Video Interview Act',
+        jurisdiction: 'United States',
+        kind: 'Law',
+        outcome: /illinois/i.test(text) ? 'Gap' : 'Screened',
+        rationale: /illinois/i.test(text)
+          ? 'A video-interview or Illinois employment use is described. Transparency and sensitive-data handling evidence for the Illinois Act is not attached.'
+          : 'A video-interview use is described in the United States. The Illinois Artificial Intelligence Video Interview Act can apply for Illinois candidates. Confirm that geography before treating it as in scope.',
       })
     }
     if (/colorado/i.test(text) || (global && risk)) {
@@ -335,13 +414,121 @@ export function assessApplicability(subject: ApplicabilitySubject): Applicabilit
     }
   }
 
+  if (inCn) {
+    add({
+      id: 'china-ai',
+      name: 'China generative AI, deep-synthesis and algorithm rules',
+      jurisdiction: 'China',
+      kind: 'Law',
+      outcome: llm || risk ? 'Gap' : 'Screened',
+      rationale: 'China is in scope. Targeted CAC measures on generative AI, deep synthesis and algorithm recommendation may apply for services to the public in China. No China filing or labelling evidence is attached. This is not a market-access determination.',
+    })
+  }
+
+  if (inJp) {
+    add({
+      id: 'japan-ai',
+      name: 'Japan AI Promotion Act (Act No. 53 of 2025)',
+      jurisdiction: 'Japan',
+      kind: 'Law',
+      outcome: 'Screened',
+      rationale: 'Japan’s AI Promotion Act is screened as a promotion statute with cooperation duties. It is not treated as an EU-style fine regime on this screen.',
+    })
+  }
+
+  if (inCa) {
+    add({
+      id: 'canada-federal',
+      name: 'Canada federal AI statute screening note',
+      jurisdiction: 'Canada',
+      kind: 'Screening note',
+      outcome: 'Screened',
+      rationale: 'No comprehensive federal Canadian AI statute is identified after Bill C-27 died. Assess the Directive on Automated Decision-Making and Quebec Law 25 separately.',
+    })
+    add({
+      id: 'canada-adm',
+      name: 'Canada Directive on Automated Decision-Making',
+      jurisdiction: 'Canada',
+      kind: 'Framework',
+      outcome: 'Screened',
+      rationale: 'Federal automated-decision directive. Confirm whether the deployer is a Government of Canada institution before treating it as in scope.',
+    })
+    if (/quebec/i.test(text) || personal) {
+      add({
+        id: 'quebec-law25',
+        name: 'Quebec Law 25 (automated decision transparency)',
+        jurisdiction: 'Canada',
+        kind: 'Law',
+        outcome: /quebec/i.test(text) ? 'Gap' : 'Screened',
+        rationale: /quebec/i.test(text)
+          ? 'Quebec is recorded. Law 25 transparency and governance evidence is not attached.'
+          : 'Canadian personal-data use is recorded. Confirm Quebec geography before treating Law 25 as in scope.',
+      })
+    }
+  }
+
+  if (inBr) {
+    add({
+      id: 'brazil-lgpd',
+      name: 'Brazil LGPD automated-decision rights',
+      jurisdiction: 'Brazil',
+      kind: 'Law',
+      outcome: personal ? 'Gap' : 'Screened',
+      rationale: personal
+        ? 'Brazil is in scope with personal data. LGPD automated-decision review evidence is not attached.'
+        : 'Brazil is in scope. LGPD automated-decision duties apply when personal data is processed.',
+    })
+    add({
+      id: 'brazil-eca',
+      name: 'Brazil ECA Digital algorithmic duties',
+      jurisdiction: 'Brazil',
+      kind: 'Law',
+      outcome: 'Screened',
+      rationale: 'ECA Digital algorithmic duties are screened for services that may reach Brazilian minors. Confirm product scope before treating reporting duties as in force.',
+    })
+  }
+
+  if (inAu) {
+    add({
+      id: 'australia-ai',
+      name: 'Australia AI Ethics Principles and privacy ADM transparency',
+      jurisdiction: 'Australia',
+      kind: 'Framework',
+      outcome: 'Screened',
+      rationale: 'Australia has no horizontal AI Act on this screen. Voluntary ethics principles and privacy ADM transparency are screened.',
+    })
+  }
+
+  if (inIn) {
+    add({
+      id: 'india-ai',
+      name: 'India MeitY AI advisories and draft rules',
+      jurisdiction: 'India',
+      kind: 'Framework',
+      outcome: 'Screened',
+      rationale: 'MeitY advisories and draft AI materials are screened. A comprehensive Indian AI Act is not treated as enacted on this screen.',
+    })
+  }
+
+  if (inUae) {
+    add({
+      id: 'uae-ai',
+      name: 'UAE National Strategy for Artificial Intelligence 2031',
+      jurisdiction: 'United Arab Emirates',
+      kind: 'Framework',
+      outcome: 'Screened',
+      rationale: 'UAE national AI strategy materials are screened. They are not treated as a single horizontal AI statute on this screen.',
+    })
+  }
+
   const scopeLabel = global ? 'Global' : unique.length ? unique.join(', ') : 'Geography not stated'
-  const skipped = PLACES.filter((place) => !unique.includes(place))
+  const skipped = PLACES.filter((place) => !unique.includes(place as typeof PLACES[number]))
+  const placeList = PLACES.join(', ')
   const notAssessed = global
-    ? 'Deployment is recorded as global, so the United Kingdom, European Union, France, United States, Singapore and South Korea catalogues were screened together. A row is not a finding that every duty applies.'
+    ? `Deployment is recorded as global, so the ${placeList} catalogues were screened together. A row is not a finding that every duty applies.`
     : unique.length
       ? `Not assessed, because deployment is recorded as ${unique.join(', ')}: ${skipped.join(', ')}. A United Kingdom-only financial system is not screened against the ECB. An EU or global financial system is.`
-      : 'Deployment geography is not recorded, so country laws were not assessed. A United Kingdom-only financial system is screened against PRA SS1/23 and UK GDPR, and not against the ECB. An EU financial system is screened against the EU AI Act and, where a euro-area bank is indicated, ECB supervisory expectations. France adds CNIL. The United States adds SR 11-7 for a financial use. Singapore adds the IMDA framework and, for finance, MAS. South Korea adds the AI Framework Act. Record Global to screen the full catalogue.'
+      : `Deployment geography is not recorded, so country laws were not assessed. A United Kingdom-only financial system is screened against PRA SS1/23 and UK GDPR, and not against the ECB. An EU financial system is screened against the EU AI Act and, where a euro-area bank is indicated, ECB supervisory expectations. Record Global to screen the full catalogue (${placeList}).`
 
   const gaps = assessed.filter((item) => item.outcome === 'Gap').length
   return {

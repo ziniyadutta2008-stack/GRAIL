@@ -10,7 +10,7 @@
       "lifecycle_state": "Restricted operation",
       "gate": "No-Go",
       "gate_scope": "External audit entry and further scaling",
-      "gate_reason": "Critical evidence and control gaps remain open: CC7.1 Fail; A.7.2 Gap; GAP-01 and GAP-02 High.",
+      "gate_reason": "Critical evidence and control gaps remain open: CC7.1 Fail; A.7.2 Partial (business-impact accepted, bias and fairness still missing); GAP-01 and GAP-02 High.",
       "business_owner": "Model Owner / Business Sponsor",
       "model_owner": "persona-system-owner",
       "vendor": "Not specified in source",

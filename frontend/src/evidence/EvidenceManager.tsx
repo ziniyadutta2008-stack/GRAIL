@@ -104,7 +104,7 @@ export function EvidenceManager({ subjectId, subjectLabel }: { subjectId: string
           <label className="field">Valid from<input type="date" value={draft.validFrom} onChange={(event) => setDraft({ ...draft, validFrom: event.target.value })} required /></label>
           <label className="field">Evidence expiry<input type="date" value={draft.expiresOn} onChange={(event) => setDraft({ ...draft, expiresOn: event.target.value })} required /></label>
           <label className="field">Link or reference<input value={draft.reference} onChange={(event) => setDraft({ ...draft, reference: event.target.value })} /></label>
-          <label className="field">Linked lifecycle gate<input value={draft.linkedGate} onChange={(event) => setDraft({ ...draft, linkedGate: event.target.value })} /></label>
+          <label className="field">Linked lifecycle stage<input value={draft.linkedGate} onChange={(event) => setDraft({ ...draft, linkedGate: event.target.value })} placeholder="e.g. Deployment readiness and approval" /></label>
           <label className="field">Linked finding<input value={draft.linkedFinding} onChange={(event) => setDraft({ ...draft, linkedFinding: event.target.value })} /></label>
           <label className="field">Supersedes
             <select value={draft.supersedes} onChange={(event) => setDraft({ ...draft, supersedes: event.target.value })}>
@@ -248,7 +248,13 @@ function EvidenceCard({
       {item.objectPreview ? <pre className="evidence-preview">{item.objectPreview}</pre> : null}
       <p>Storage key: <span className="mono">{item.storageKey}</span></p>
       <p>Validation: {item.validationResult}{item.validator ? ` by ${item.validator}` : ''}.</p>
-      <p>{item.linkedGate ? `Lifecycle gate: ${item.linkedGate}. ` : ''}{item.linkedFinding ? `Finding: ${item.linkedFinding}.` : ''}</p>
+      <p>{item.linkedGate ? `Lifecycle stage: ${item.linkedGate}. ` : ''}{item.linkedFinding ? `Finding: ${item.linkedFinding}.` : ''}</p>
+      {item.currentSystemDecision ? (
+        <p>
+          Current system decision: {item.currentSystemDecision}.
+          {item.decisionContext ? ` ${item.decisionContext}` : ''}
+        </p>
+      ) : null}
       <p>{item.supersededBy ? `Superseded by ${item.supersededBy}.` : null}</p>
       <p>Collected {item.collectedOn}. Valid from {item.validFrom}. Expires {item.expiresOn}. Expiry status: {expiryStatus(item)}</p>
       <p>Reviewer decision: {item.validator ? `${item.validationResult} by ${item.validator}.` : `${item.validationResult}.`} Submitted by {item.submittedBy} on {item.submittedOn}.</p>

@@ -74,7 +74,7 @@ describe('law and framework applicability', () => {
     })
     const assessed = report.assessed.map((item) => item.id)
     expect(report.scopeLabel).toBe('Global')
-    for (const id of ['eu-ai-act', 'pra-ss123', 'ecb', 'cnil', 'sr-11-7', 'mas', 'kr-ai-act', 'owasp-llm-2025']) {
+    for (const id of ['eu-ai-act', 'pra-ss123', 'ecb', 'cnil', 'sr-11-7', 'mas', 'kr-ai-act', 'owasp-llm-2025', 'china-ai', 'japan-ai', 'canada-federal', 'brazil-lgpd', 'india-ai', 'uae-ai', 'unesco', 'coe-ai']) {
       expect(assessed).toContain(id)
     }
     expect(report.assessed.find((item) => item.id === 'eu-ai-act')?.rationale).toContain('Article 49')

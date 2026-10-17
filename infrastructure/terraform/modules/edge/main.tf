@@ -101,7 +101,7 @@ resource "aws_cloudfront_function" "spa_routing" {
   name    = "${var.prefix}-spa-routing"
   runtime = "cloudfront-js-2.0"
   publish = true
-  code    = file("${path.module}/../../edge/spa-routing.js")
+  code    = file("${path.module}/spa-routing.js")
 }
 
 resource "aws_cloudfront_response_headers_policy" "security" {

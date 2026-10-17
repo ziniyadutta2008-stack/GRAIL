@@ -40,6 +40,11 @@ describe('evidence and remediation management', () => {
     expect(document.querySelector('time[datetime="2026-10-02T15:10:00Z"]')).not.toBeNull()
     expect(screen.getByText(/Expiry status: Not expired. Expires 2027-04-30/)).toBeInTheDocument()
     expect(screen.getAllByText(/Finding: GAP-01/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Lifecycle stage: Deployment readiness and approval/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Current system decision: No-Go/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/does not resolve the remaining blocking conditions/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Partial').length).toBeGreaterThan(0)
+    expect(screen.getByText(/business-impact evidence accepted/i)).toBeInTheDocument()
     expect(screen.getAllByText(/Reviewer decision: Validated by Lucas Meyer/).length).toBeGreaterThan(0)
     expect(screen.getAllByText('Uploaded').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Quarantined').length).toBeGreaterThan(0)
@@ -64,21 +69,27 @@ describe('evidence and remediation management', () => {
 
     const audit = renderApp({ path: '/assess/iso42001/financeguard-ai/controls/iso-fg-A.7.2', personaId: 'persona-audit' })
     const acceptButtons = await screen.findAllByRole('button', { name: 'Accept evidence' })
-    await user.click(acceptButtons[0]!)
+    const firstAccept = acceptButtons[0]
+    expect(firstAccept).toBeTruthy()
+    await user.click(firstAccept as HTMLElement)
     expect(await screen.findByRole('status')).toHaveTextContent(/both Effective/)
     await user.selectOptions(screen.getByLabelText('Design effectiveness'), 'Effective')
     await user.selectOptions(screen.getByLabelText('Operating effectiveness'), 'Effective')
     await user.click(screen.getByRole('button', { name: 'Accept evidence' }))
     expect(await screen.findByText(/Evidence accepted/)).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: /A\.7\.2/ })).toBeInTheDocument()
-    expect(screen.getAllByText('Gap').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('Partial').length).toBeGreaterThan(0)
     audit.unmount()
 
     renderApp({ path: '/assess/iso42001/financeguard-ai/controls/iso-fg-A.7.2', personaId: 'persona-security' })
     const challengeFields = await screen.findAllByLabelText('Challenge comment')
-    await user.type(challengeFields[challengeFields.length - 1]!, 'The sample is one system only.')
+    const lastChallenge = challengeFields[challengeFields.length - 1]
+    expect(lastChallenge).toBeTruthy()
+    await user.type(lastChallenge as HTMLElement, 'The sample is one system only.')
     const challengeButtons = screen.getAllByRole('button', { name: 'Challenge' })
-    await user.click(challengeButtons[challengeButtons.length - 1]!)
+    const lastChallengeButton = challengeButtons[challengeButtons.length - 1]
+    expect(lastChallengeButton).toBeTruthy()
+    await user.click(lastChallengeButton as HTMLElement)
     expect(await screen.findByText(/Challenge recorded/)).toBeInTheDocument()
   })
 
