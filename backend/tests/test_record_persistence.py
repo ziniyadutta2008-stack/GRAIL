@@ -47,9 +47,7 @@ def _dependencies() -> Dependencies:
             roles=frozenset({Role.READ_ONLY_REVIEWER}),
         ),
     ]
-    return Dependencies(
-        memberships=InMemoryMembershipRepository([organization], memberships)
-    )
+    return Dependencies(memberships=InMemoryMembershipRepository([organization], memberships))
 
 
 def _call(
