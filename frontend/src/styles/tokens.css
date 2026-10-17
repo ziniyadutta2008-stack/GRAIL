@@ -1,0 +1,73 @@
+/*
+ * GRAIL design tokens: the single source for colour, type, spacing and radius.
+ * Brand values follow CLAUDE.md section 11. Teal, Forest Green and Amber are below
+ * 4.5:1 on white, so they are used for icons, borders and fills. Text uses the
+ * darker "-ink" variants. src/styles/tokens.test.ts checks every documented pair.
+ */
+:root {
+  /* Brand palette */
+  --color-midnight-navy: #0d1b2a;
+  --color-governance-indigo: #4656e8;
+  --color-governance-indigo-hover: #3644c9;
+  --color-mineral-teal: #0f9d8a;
+  --color-muted-gold: #c99a3d;
+  --color-cloud-grey: #f5f7fa;
+  --color-white: #ffffff;
+  --color-ink: #172033;
+  --color-slate: #667085;
+  --color-mist-grey: #dce3ea;
+  --color-field-border: #8792a2;
+
+  /* Semantic status: base for icons and borders, ink for text, tint for backgrounds */
+  --color-success: #168a5b;
+  --color-success-ink: #11724b;
+  --color-success-tint: #e8f5ee;
+  --color-warning: #c77a00;
+  --color-warning-ink: #8a5300;
+  --color-warning-tint: #fdf3e1;
+  --color-critical: #c43d3d;
+  --color-critical-ink: #a83232;
+  --color-critical-tint: #fbeaea;
+  --color-info: #2f6fed;
+  --color-info-ink: #2459c7;
+  --color-info-tint: #eaf1fd;
+  --color-neutral-ink: #475467;
+  --color-neutral-tint: #eef1f5;
+  --color-evidence-ink: #0b7a6b;
+  --color-evidence-tint: #e6f5f2;
+
+  /* Navigation shell */
+  --color-nav-text: #c9d3e0;
+  --color-nav-muted: #9aa8ba;
+  --color-nav-active-bg: #1b2d42;
+
+  /* Typography */
+  --font-sans: 'Inter Variable', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', monospace;
+  --text-xs: 0.6875rem;
+  --text-sm: 0.75rem;
+  --text-md: 0.8125rem;
+  --text-lg: 0.9375rem;
+  --text-xl: 1.125rem;
+  --text-2xl: 1.375rem;
+
+  /* Eight-pixel spacing system */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+
+  /* Shape and depth */
+  --radius-card: 12px;
+  --radius-control: 8px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 6%);
+  --focus-ring: 0 0 0 3px rgb(70 86 232 / 35%);
+
+  /* Layout */
+  --sidebar-width: 15.5rem;
+  --content-max-width: 90rem;
+}

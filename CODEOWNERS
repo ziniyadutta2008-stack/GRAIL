@@ -1,0 +1,13 @@
+# Template: replace @ziniyadutta2008-stack with the reviewing team before enabling
+# "Require review from Code Owners" on the protected main branch.
+
+*                                   @ziniyadutta2008-stack
+
+# Security-sensitive areas need explicit owner review.
+/infrastructure/                    @ziniyadutta2008-stack
+/.github/workflows/                 @ziniyadutta2008-stack
+/backend/migrations/                @ziniyadutta2008-stack
+/backend/src/grail/auth/            @ziniyadutta2008-stack
+/backend/src/grail/agents/          @ziniyadutta2008-stack
+/backend/src/grail/prompts/         @ziniyadutta2008-stack
+/backend/src/grail/api/origin.py    @ziniyadutta2008-stack

@@ -1,0 +1,78 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "records": [
+    {
+      "id": "pol-meridian-ai-security",
+      "title": "AI Model Security and Monitoring Policy",
+      "ai_system_id": "meridian-cs-assistant",
+      "version": "1.0",
+      "status": "Draft",
+      "review_status": "Under Review",
+      "owner": "AI Governance Lead",
+      "approver_role": "CISO",
+      "proposed_effective_date": "2026-10-01",
+      "review_cycle": "Semi-annual and on material model or regulatory change",
+      "authored_by": "human",
+      "sections": [
+        { "heading": "purpose", "summary": "Management-approved requirements for secure operation, monitoring and oversight of the fine-tuned customer service LLM.", "references": ["ISO/IEC 42001 Clause 5.2", "A.2.2"] },
+        { "heading": "scope", "summary": "Inference endpoint, administration interface, weights, prompts and guardrails, fine-tuning artifacts, inference-time customer data, API layer, logging and rollback; non-production instances using production-derived data.", "references": ["ISO/IEC 42001 Clause 4.3", "A.5.2"] },
+        { "heading": "policy_statements", "topic": "access_and_authorization", "summary": "Least-privilege access to endpoint, administration, weights, prompts and fine-tuning data; quarterly certification; revocation within 24 hours.", "references": ["ISO/IEC 42001 Clause 6.1", "A.9.2", "A.3.2", "EU AI Act Article 15", "OWASP LLM08"] },
+        { "heading": "policy_statements", "topic": "monitoring_and_anomaly_detection", "summary": "Continuous automated monitoring; weekly documented output review; critical alerts triaged within 15 minutes; a 5-point accuracy drop, confirmed disclosure or control-bypassing prompt injection triggers formal review.", "references": ["ISO/IEC 42001 Clause 8.4", "A.6.2.8", "EU AI Act Article 15", "OWASP LLM01", "OWASP LLM04", "OWASP LLM06"] },
+        { "heading": "policy_statements", "topic": "incident_classification_and_response", "summary": "Defined AI security incident classes; Severity 1 acknowledged within 15 minutes and CISO, Model Owner and AI Governance Lead notified within one hour.", "references": ["ISO/IEC 42001 Clause 6.1", "A.3.2", "EU AI Act Article 15"] },
+        { "heading": "policy_statements", "topic": "model_change_validation_and_rollback", "summary": "Retraining, version, prompt, guardrail and pipeline changes need impact assessment, security testing, validation, approval and a tested rollback path.", "references": ["ISO/IEC 42001 Clause 6.1", "Clause 8.4", "A.3.2", "OWASP LLM02"] },
+        { "heading": "policy_statements", "topic": "inference_data_handling", "summary": "Minimum necessary customer data at inference, approved data paths only; confirmed disclosure handled as an AI security incident.", "references": ["ISO/IEC 42001 Clause 6.1", "A.9.2", "A.3.2", "OWASP LLM06"] },
+        { "heading": "roles", "summary": "Model Owner, Security Operations, Data Steward, System Administrator, AI Governance Lead and Incident Response Lead with named obligations.", "references": ["ISO/IEC 42001 Clause 5.3", "A.3.2"] },
+        { "heading": "assumptions", "summary": "Clause-to-Annex pairings follow the organization's reference guide and are pending verification against the licensed standard.", "references": [] }
+      ],
+      "unresolved_assumptions": ["Clause-to-Annex pairings pending verification", "Enforcement section not yet reviewed by Legal"],
+      "synthetic": true,
+      "provenance": { "source_file": "AI_Model_Security_and_Monitoring_Policy_Meridian.pdf", "location": "Document header and sections 1-4" }
+    },
+    {
+      "id": "POL-SEC-01",
+      "title": "Restricted access, data protection and retention",
+      "ai_system_id": "financeguard-ai",
+      "version": "1.0",
+      "status": "Approved",
+      "owner": "Cyber Security & Legal Teams",
+      "authored_by": "human",
+      "summary": "Least-privilege gateway access for approved Compliance and Legal groups; encryption in transit and at rest; scheduled purge of session data and retained documents; no scope expansion without governance approval.",
+      "metrics": ["100% production access through approved gateway roles", "100% encryption of sensitive data", "Monthly evidence of retention and disposal jobs", "Zero unapproved scope expansions"],
+      "references": ["A.5.2", "A.8.3", "Clause 6.1.2"],
+      "synthetic": true,
+      "synthetic_addition": ["status", "version"],
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.6 POL-SEC-01" }
+    },
+    {
+      "id": "POL-MON-02",
+      "title": "Continuous monitoring, performance review and human oversight",
+      "ai_system_id": "financeguard-ai",
+      "version": "1.0",
+      "status": "Approved",
+      "owner": "Model Owner / Business Sponsor",
+      "authored_by": "human",
+      "summary": "Continuous logging and monitoring of prompts, outputs, access events, anomalies and performance; weekly governance review; material anomalies and consequential outputs trigger documented human review and escalation.",
+      "metrics": ["100% telemetry coverage", "Weekly review on time", "100% material alerts documented and escalated", "Human review evidence for consequential outputs"],
+      "references": ["A.6.2", "A.7.2", "Clause 6.1.2"],
+      "synthetic": true,
+      "synthetic_addition": ["status", "version"],
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.6 POL-MON-02" }
+    },
+    {
+      "id": "POL-SEC-03",
+      "title": "AI security incident classification and response",
+      "ai_system_id": "financeguard-ai",
+      "version": "1.0",
+      "status": "Approved",
+      "owner": "Cyber Security & Legal Teams",
+      "authored_by": "human",
+      "summary": "Prompt injection, unauthorized access, weight modification, sensitive disclosure and sustained anomalous behaviour are AI security incidents with named owner, containment, evidence, root cause and closure approval.",
+      "metrics": ["Incidents registered within one business day", "100% with owner, containment, evidence, root cause and closure approval", "Overdue High incidents escalated"],
+      "references": ["A.8.3", "A.3.2", "Clause 6.1.2"],
+      "synthetic": true,
+      "synthetic_addition": ["status", "version"],
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.6 POL-SEC-03" }
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "records": [
+    {
+      "id": "cr-2026-q2",
+      "title": "Q2 2026 charter and operating-model review",
+      "state": "Draft",
+      "created_on": "2026-08-29",
+      "triggers": [
+        { "rule": "critical_kpi_single_period", "kpi_id": "kpi-exception-backlog", "period": "2026-Q2", "observed": 110, "threshold": "critical when >= 60 days; target < 30 days" },
+        { "rule": "critical_kpi_single_period", "kpi_id": "kpi-remediation-velocity", "period": "2026-Q2", "observed": -35, "threshold": "critical when <= -25%; goal maintain or improve" },
+        { "rule": "out_of_scope_share", "kpi_id": "kpi-ai-intake", "period": "2026-Q2", "observed": 30, "threshold": "review when more than 10% of intake is outside charter scope" }
+      ],
+      "proposed_changes": [
+        { "type": "operating_model_adjustment", "summary": "Introduce risk-tiered exception approval: delegate low-risk approvals to the Governance Lead and reserve Steering Committee review for high-risk exceptions.", "owner": "persona-governance" },
+        { "type": "operating_model_adjustment", "summary": "Set a 30-day exception ageing SLA and review overdue items weekly.", "owner": "persona-governance" },
+        { "type": "charter_amendment", "summary": "Expand charter scope to every department that develops or procures AI systems, with oversight from project intake onward.", "owner": "persona-executive" }
+      ],
+      "decision_required_from": "executive_approver",
+      "synthetic": true,
+      "synthetic_addition": ["state", "owner"],
+      "provenance": { "source_file": "KPI_Recommendation_Memo.pdf", "location": "Finding 1 and Finding 2" }
+    }
+  ]
+}

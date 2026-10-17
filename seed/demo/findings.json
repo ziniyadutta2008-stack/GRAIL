@@ -1,0 +1,85 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "records": [
+    {
+      "id": "GAP-01",
+      "ai_system_id": "financeguard-ai",
+      "framework_id": "microsoft-rai-standard-v2",
+      "requirement_ref": "Accountability (organization reference 3.1)",
+      "title": "No AI-specific incident response and escalation procedure",
+      "severity": "High",
+      "rationale": "No completed AI incident playbook is evidenced; existing security processes do not show model-output incident classification, AI escalation paths or lessons learned.",
+      "status": "Open",
+      "owner": "AI Program Lead / Governance Manager",
+      "synthetic": true,
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.3 GAP-01" }
+    },
+    {
+      "id": "GAP-02",
+      "ai_system_id": "financeguard-ai",
+      "framework_id": "microsoft-rai-standard-v2",
+      "requirement_ref": "Human-centricity and control (organization reference 4.2)",
+      "title": "No documented human review and override for consequential outputs",
+      "severity": "High",
+      "rationale": "No documented human review or override gate before outputs are used in consequential document review or regulatory filing workflows.",
+      "status": "Open",
+      "owner": "Model Owner / Business Sponsor",
+      "synthetic": true,
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.3 GAP-02" }
+    },
+    {
+      "id": "GAP-03",
+      "ai_system_id": "financeguard-ai",
+      "framework_id": "microsoft-rai-standard-v2",
+      "requirement_ref": "Transparency (organization reference 2.4)",
+      "title": "Incomplete model transparency documentation",
+      "severity": "Medium",
+      "rationale": "Purpose is known, but a complete model card, limitations statement and fine-tuning data characteristics have not been provided.",
+      "status": "Open",
+      "owner": "Model Owner / Business Sponsor",
+      "synthetic": true,
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.3 GAP-03" }
+    },
+    {
+      "id": "CH-GAP-1",
+      "ai_system_id": "contoso-health-diagnostic-support",
+      "framework_id": "microsoft-rai-standard-v2",
+      "requirement_ref": "Human-centricity and control (organization reference 4.2)",
+      "title": "No qualified human review or safe override before diagnostic decisions",
+      "severity": "Critical",
+      "rationale": "Policy 9.1 governs production change but does not require review of AI diagnostic outputs; a direct patient-safety gap.",
+      "status": "Open",
+      "owner": "Chief Medical Officer",
+      "synthetic": true,
+      "provenance": { "source_file": "Remediation_Analysis.pdf", "location": "p.1 gap table row 1" }
+    },
+    {
+      "id": "CH-GAP-2",
+      "ai_system_id": "contoso-health-diagnostic-support",
+      "framework_id": "microsoft-rai-standard-v2",
+      "requirement_ref": "Accountability (organization reference 3.1)",
+      "title": "No AI incident plan for biased, unsafe or incorrect outputs",
+      "severity": "Critical",
+      "rationale": "Policy 8.2 covers data security incidents only; AI output harms lack roles, escalation, records and recurrence prevention.",
+      "status": "Open",
+      "owner": "Information Security Officer",
+      "synthetic": true,
+      "provenance": { "source_file": "Remediation_Analysis.pdf", "location": "p.1 gap table row 2" }
+    },
+    {
+      "id": "CH-GAP-3",
+      "ai_system_id": "contoso-health-diagnostic-support",
+      "framework_id": "microsoft-rai-standard-v2",
+      "requirement_ref": "Transparency (organization reference 2.4)",
+      "title": "No lifecycle documentation of purpose, capabilities and limitations",
+      "severity": "High",
+      "source_severity": "Significant",
+      "rationale": "Change control captures change, reason and rollback only; no persistent AI documentation or stakeholder access is required.",
+      "status": "Open",
+      "owner": "Chief Data Officer",
+      "synthetic": true,
+      "provenance": { "source_file": "Remediation_Analysis.pdf", "location": "p.1 gap table row 3" }
+    }
+  ]
+}

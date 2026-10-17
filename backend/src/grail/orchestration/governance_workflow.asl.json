@@ -1,0 +1,306 @@
+{
+  "Comment": "GRAIL governance review: bounded, deterministic orchestration that ends at a human-review checkpoint. Placeholders are rendered by Terraform templatefile().",
+  "QueryLanguage": "JSONata",
+  "TimeoutSeconds": 900,
+  "StartAt": "ValidateRequest",
+  "States": {
+    "ValidateRequest": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${workflow_control_arn}",
+        "Payload": { "action": "validate_request", "input": "{% $states.input %}" }
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 30,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RequestRejected" }],
+      "Next": "CreateExecutionManifest"
+    },
+    "CreateExecutionManifest": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${workflow_control_arn}",
+        "Payload": { "action": "create_execution_manifest", "input": "{% $states.input %}" }
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 30,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RequestRejected" }],
+      "Next": "IntakeChoice"
+    },
+    "IntakeChoice": {
+      "Type": "Choice",
+      "Choices": [{ "Condition": "{% $states.input.plan.run_intake %}", "Next": "GovernanceIntake" }],
+      "Default": "FrameworkMapping"
+    },
+    "GovernanceIntake": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${governance_intake_arn}",
+        "Payload": "{% $states.input.envelopes.governance_intake %}"
+      },
+      "Output": "{% $merge([$states.input, {'results': $merge([$states.input.results, {'governance_intake': $states.result.Payload}])}]) %}",
+      "TimeoutSeconds": 120,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "FrameworkMapping"
+    },
+    "FrameworkMapping": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${framework_mapping_arn}",
+        "Payload": "{% $states.input.envelopes.framework_mapping %}"
+      },
+      "Output": "{% $merge([$states.input, {'results': $merge([$states.input.results, {'framework_mapping': $states.result.Payload}])}]) %}",
+      "TimeoutSeconds": 120,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "EvidenceAssurance"
+    },
+    "EvidenceAssurance": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${evidence_assurance_arn}",
+        "Payload": "{% $states.input.envelopes.evidence_assurance %}"
+      },
+      "Output": "{% $merge([$states.input, {'results': $merge([$states.input.results, {'evidence_assurance': $states.result.Payload}])}]) %}",
+      "TimeoutSeconds": 120,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "DraftingBranches"
+    },
+    "DraftingBranches": {
+      "Type": "Parallel",
+      "Branches": [
+        {
+          "StartAt": "GapRemediation",
+          "States": {
+            "GapRemediation": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Arguments": {
+                "FunctionName": "${gap_remediation_arn}",
+                "Payload": "{% $states.input.envelopes.gap_remediation %}"
+              },
+              "Output": "{% {'gap_remediation': $states.result.Payload} %}",
+              "TimeoutSeconds": 120,
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+                  "IntervalSeconds": 3,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            }
+          }
+        },
+        {
+          "StartAt": "DraftingChoice",
+          "States": {
+            "DraftingChoice": {
+              "Type": "Choice",
+              "Choices": [
+                { "Condition": "{% $states.input.plan.drafting_mode = 'policy_drafting' %}", "Next": "PolicyDrafting" },
+                { "Condition": "{% $states.input.plan.drafting_mode = 'policy_exception' %}", "Next": "PolicyException" }
+              ],
+              "Default": "NoDraftingRequested"
+            },
+            "PolicyDrafting": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Arguments": {
+                "FunctionName": "${policy_exception_drafting_arn}",
+                "Payload": "{% $states.input.envelopes.policy_drafting %}"
+              },
+              "Output": "{% {'policy_drafting': $states.result.Payload} %}",
+              "TimeoutSeconds": 120,
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+                  "IntervalSeconds": 3,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            },
+            "PolicyException": {
+              "Type": "Task",
+              "Resource": "arn:aws:states:::lambda:invoke",
+              "Arguments": {
+                "FunctionName": "${policy_exception_drafting_arn}",
+                "Payload": "{% $states.input.envelopes.policy_exception %}"
+              },
+              "Output": "{% {'policy_exception': $states.result.Payload} %}",
+              "TimeoutSeconds": 120,
+              "Retry": [
+                {
+                  "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+                  "IntervalSeconds": 3,
+                  "MaxAttempts": 2,
+                  "BackoffRate": 2,
+                  "JitterStrategy": "FULL"
+                }
+              ],
+              "End": true
+            },
+            "NoDraftingRequested": {
+              "Type": "Pass",
+              "Output": {},
+              "End": true
+            }
+          }
+        }
+      ],
+      "Output": "{% $merge([$states.input, {'results': $merge([$states.input.results, $states.result[0], $states.result[1]])}]) %}",
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "CouncilSecretariat"
+    },
+    "CouncilSecretariat": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${council_secretariat_arn}",
+        "Payload": "{% $states.input.envelopes.council_secretariat %}"
+      },
+      "Output": "{% $merge([$states.input, {'results': $merge([$states.input.results, {'council_secretariat': $states.result.Payload}])}]) %}",
+      "TimeoutSeconds": 120,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException", "States.Timeout"],
+          "IntervalSeconds": 3,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "GovernanceQualityChecks"
+    },
+    "GovernanceQualityChecks": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${workflow_control_arn}",
+        "Payload": { "action": "governance_quality_checks", "input": "{% $states.input %}" }
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 60,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "PersistProposals"
+    },
+    "PersistProposals": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${workflow_control_arn}",
+        "Payload": { "action": "persist_proposals", "input": "{% $states.input %}" }
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 60,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 2,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Catch": [{ "ErrorEquals": ["States.ALL"], "Next": "RecordPartialCompletion", "Output": "{% $merge([$states.input, {'failure': $states.errorOutput}]) %}" }],
+      "Next": "AwaitingHumanReview"
+    },
+    "AwaitingHumanReview": {
+      "Type": "Succeed",
+      "Comment": "Proposals are persisted as Draft with a HumanReviewCheckpoint. An authorized reviewer action starts any continuation."
+    },
+    "RecordPartialCompletion": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Arguments": {
+        "FunctionName": "${workflow_control_arn}",
+        "Payload": { "action": "record_partial_completion", "input": "{% $states.input %}" }
+      },
+      "Output": "{% $states.result.Payload %}",
+      "TimeoutSeconds": 30,
+      "Retry": [
+        {
+          "ErrorEquals": ["Lambda.ServiceException", "Lambda.AWSLambdaException", "Lambda.SdkClientException", "Lambda.TooManyRequestsException"],
+          "IntervalSeconds": 2,
+          "MaxAttempts": 3,
+          "BackoffRate": 2,
+          "JitterStrategy": "FULL"
+        }
+      ],
+      "Next": "PartialCompletion"
+    },
+    "PartialCompletion": {
+      "Type": "Fail",
+      "Error": "GRAIL.PartialCompletion",
+      "Cause": "Downstream work stopped. Completed proposals are kept as Draft and are not presented as a completed assessment."
+    },
+    "RequestRejected": {
+      "Type": "Fail",
+      "Error": "GRAIL.RequestRejected",
+      "Cause": "The workflow request failed tenant, permission or input validation."
+    }
+  }
+}

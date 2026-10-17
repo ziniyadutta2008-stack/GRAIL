@@ -1,0 +1,73 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "note": "Golden fixtures for Responsible AI ethics and data practice. Outcomes are rule results from the source packages. They are not remapped onto the six estate systems. Thresholds are demo policy configuration, not universal standards.",
+  "provenance": {
+    "source_file": null,
+    "location": "Several source packages; each fixture names its own source_file."
+  },
+  "policy": {
+    "fairness": {
+      "id": "demo-fairness-2026",
+      "label": "Demo policy configuration, not a universal standard",
+      "dir_p1_below": 0.7,
+      "disparity_p1_above": 0.1
+    },
+    "quality": {
+      "id": "demo-quality-2026",
+      "label": "Demo policy configuration, not a universal standard",
+      "drift_flag": 0.2,
+      "drift_monitor": 0.1,
+      "outlier_flag": 10
+    }
+  },
+  "fixtures": [
+    {
+      "id": "loan",
+      "source_file": "Copilot_Loan_Responsible_AI_Scoring_and_Decision.pdf",
+      "use_case": "Mitigate",
+      "release_state": "Remediation required",
+      "principle_ratings": ["Concern", "Concern", "Concern", "Concern", "Concern", "Pass"]
+    },
+    {
+      "id": "hiring",
+      "source_file": "P1 Ethics Escalation.docx",
+      "use_case": "Mitigate",
+      "release_state": "Production hold",
+      "incident": "P1-ETHICS-HSM-001",
+      "p1_breaches": 3,
+      "selected_mitigation": "Post-processing fairness correction"
+    },
+    {
+      "id": "cx-corpus",
+      "source_file": "Third_Party_Dataset_Ethics_Review_Solution.pdf",
+      "dataset_decision": "Reject",
+      "checklist": { "Fail": 3, "Flag": 2 }
+    },
+    {
+      "id": "lineage",
+      "source_file": "Training_Data_Lineage_Review_Solution.pdf",
+      "clear_assets": 3,
+      "blocked_assets": 2
+    },
+    {
+      "id": "indexes",
+      "source_file": "Embedding_Index_Classification_Record_Completed.pdf",
+      "classifications": ["Restricted", "Public", "Internal", "Confidential", "Restricted"]
+    },
+    {
+      "id": "quality",
+      "source_file": "Dashboard_Review_Summary_Prompt_1.pdf",
+      "dispositions": { "Flag": 2, "Monitor": 2, "Clear": 4 },
+      "open_steward_tickets": ["DQ-001", "DQ-002"]
+    },
+    {
+      "id": "triage",
+      "source_file": "Ethical_AI_Review_Package_Patient_Triage_EXEMPLARY.pdf",
+      "use_case": "Mitigate",
+      "dataset_decision": "Reject",
+      "executive": "Conditional approval",
+      "release_state": "Production hold"
+    }
+  ]
+}

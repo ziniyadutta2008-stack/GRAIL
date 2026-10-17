@@ -1,0 +1,116 @@
+{
+  "catalog_version": "2026-10-17",
+  "allowed_tool_prefixes": ["read_", "propose_", "report_"],
+  "agents": [
+    {
+      "id": "governance_intake",
+      "name": "Governance Intake Agent",
+      "worker": "governance_intake",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "governance_intake",
+      "tools": ["read_system_submission", "propose_inventory_fields"],
+      "budget": {"max_output_tokens": 1500, "timeout_seconds": 60, "max_retries": 2, "max_concurrency": 2}
+    },
+    {
+      "id": "accountability_raci",
+      "name": "Accountability and RACI Agent",
+      "worker": null,
+      "implementation": "deterministic_service",
+      "enabled": false,
+      "prompt_template": null,
+      "tools": ["read_organization_roles", "read_governance_task_templates", "propose_raci_assignments"],
+      "budget": {"max_output_tokens": 1500, "timeout_seconds": 60, "max_retries": 2, "max_concurrency": 1}
+    },
+    {
+      "id": "framework_mapping",
+      "name": "Framework Mapping Agent",
+      "worker": "framework_mapping",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "framework_mapping",
+      "tools": ["read_framework_summaries", "read_system_context", "propose_mappings"],
+      "budget": {"max_output_tokens": 2500, "timeout_seconds": 90, "max_retries": 2, "max_concurrency": 2}
+    },
+    {
+      "id": "gap_remediation",
+      "name": "Policy Gap and Remediation Agent",
+      "worker": "gap_remediation",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "gap_remediation",
+      "tools": ["read_approved_mappings", "read_evidence_assessments", "propose_findings", "propose_remediation_actions"],
+      "budget": {"max_output_tokens": 2500, "timeout_seconds": 90, "max_retries": 2, "max_concurrency": 2}
+    },
+    {
+      "id": "evidence_assurance",
+      "name": "Evidence and Assurance Agent",
+      "worker": "evidence_assurance",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "evidence_assurance",
+      "tools": ["read_authorized_evidence_extracts", "propose_evidence_observations"],
+      "budget": {"max_output_tokens": 2000, "timeout_seconds": 90, "max_retries": 2, "max_concurrency": 2}
+    },
+    {
+      "id": "soc2_readiness",
+      "name": "SOC 2 Readiness Agent",
+      "worker": null,
+      "implementation": "deterministic_service",
+      "enabled": false,
+      "prompt_template": null,
+      "tools": ["read_soc2_test_results", "read_readiness_rules", "propose_readiness_narrative"],
+      "budget": {"max_output_tokens": 1500, "timeout_seconds": 60, "max_retries": 2, "max_concurrency": 1}
+    },
+    {
+      "id": "kpi_charter",
+      "name": "KPI and Charter Agent",
+      "worker": null,
+      "implementation": "deterministic_service",
+      "enabled": false,
+      "prompt_template": null,
+      "tools": ["read_kpi_observations", "read_charter_trigger_results", "propose_charter_narrative"],
+      "budget": {"max_output_tokens": 1500, "timeout_seconds": 60, "max_retries": 2, "max_concurrency": 1}
+    },
+    {
+      "id": "policy_drafting",
+      "name": "AI Policy Drafting Agent",
+      "worker": "policy_exception_drafting",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "policy_drafting",
+      "tools": ["read_approved_policies", "read_framework_references", "read_system_context", "propose_policy_draft"],
+      "budget": {"max_output_tokens": 3000, "timeout_seconds": 90, "max_retries": 2, "max_concurrency": 2}
+    },
+    {
+      "id": "policy_exception",
+      "name": "Policy Exception Agent",
+      "worker": "policy_exception_drafting",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "policy_exception",
+      "tools": ["read_exception_request", "read_policy_and_control_context", "propose_exception_analysis"],
+      "budget": {"max_output_tokens": 2000, "timeout_seconds": 90, "max_retries": 2, "max_concurrency": 2}
+    },
+    {
+      "id": "council_secretariat",
+      "name": "Council Secretariat Agent",
+      "worker": "council_secretariat",
+      "implementation": "agent",
+      "enabled": true,
+      "prompt_template": "council_secretariat",
+      "tools": ["read_council_inputs", "propose_council_pack"],
+      "budget": {"max_output_tokens": 3000, "timeout_seconds": 90, "max_retries": 2, "max_concurrency": 1}
+    },
+    {
+      "id": "governance_quality",
+      "name": "Governance Quality Agent",
+      "worker": null,
+      "implementation": "deterministic_service",
+      "enabled": false,
+      "prompt_template": null,
+      "tools": ["read_draft_package", "report_quality_issues"],
+      "budget": {"max_output_tokens": 1500, "timeout_seconds": 60, "max_retries": 2, "max_concurrency": 1}
+    }
+  ]
+}

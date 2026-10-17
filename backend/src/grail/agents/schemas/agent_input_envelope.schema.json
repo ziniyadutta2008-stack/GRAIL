@@ -1,0 +1,201 @@
+{
+  "$defs": {
+    "AgentId": {
+      "enum": [
+        "governance_intake",
+        "accountability_raci",
+        "framework_mapping",
+        "gap_remediation",
+        "evidence_assurance",
+        "soc2_readiness",
+        "kpi_charter",
+        "policy_drafting",
+        "policy_exception",
+        "council_secretariat",
+        "governance_quality"
+      ],
+      "title": "AgentId",
+      "type": "string"
+    },
+    "AgentLimits": {
+      "additionalProperties": false,
+      "properties": {
+        "max_output_tokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 8000,
+          "title": "Max Output Tokens",
+          "type": "integer"
+        },
+        "max_retries": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Max Retries",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 120,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_output_tokens",
+        "timeout_seconds",
+        "max_retries"
+      ],
+      "title": "AgentLimits",
+      "type": "object"
+    },
+    "ClassificationDecision": {
+      "additionalProperties": false,
+      "description": "Whether the sources may be sent to a model, decided before invocation.",
+      "properties": {
+        "classification": {
+          "$ref": "#/$defs/DataClassification"
+        },
+        "decided_by": {
+          "description": "Rule or reviewer that made the decision.",
+          "title": "Decided By",
+          "type": "string"
+        },
+        "model_invocation_permitted": {
+          "title": "Model Invocation Permitted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "classification",
+        "model_invocation_permitted",
+        "decided_by"
+      ],
+      "title": "ClassificationDecision",
+      "type": "object"
+    },
+    "DataClassification": {
+      "enum": [
+        "public",
+        "internal",
+        "confidential",
+        "restricted"
+      ],
+      "title": "DataClassification",
+      "type": "string"
+    },
+    "Role": {
+      "enum": [
+        "platform_admin",
+        "governance_lead",
+        "system_owner",
+        "control_owner",
+        "security_reviewer",
+        "privacy_legal_reviewer",
+        "internal_audit",
+        "executive_approver",
+        "read_only_reviewer"
+      ],
+      "title": "Role",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": {
+      "$ref": "#/$defs/AgentId"
+    },
+    "ai_system_id": {
+      "title": "Ai System Id",
+      "type": "string"
+    },
+    "ai_system_version": {
+      "minimum": 1,
+      "title": "Ai System Version",
+      "type": "integer"
+    },
+    "approved_role": {
+      "$ref": "#/$defs/Role"
+    },
+    "correlation_id": {
+      "title": "Correlation Id",
+      "type": "string"
+    },
+    "data_classification": {
+      "$ref": "#/$defs/ClassificationDecision"
+    },
+    "execution_id": {
+      "format": "uuid",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "maxLength": 128,
+      "minLength": 16,
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "limits": {
+      "$ref": "#/$defs/AgentLimits"
+    },
+    "model_allowlist": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Model Allowlist",
+      "type": "array"
+    },
+    "organization_id": {
+      "format": "uuid",
+      "title": "Organization Id",
+      "type": "string"
+    },
+    "permitted_source_record_ids": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Permitted Source Record Ids",
+      "type": "array"
+    },
+    "prompt_template_id": {
+      "title": "Prompt Template Id",
+      "type": "string"
+    },
+    "prompt_template_version": {
+      "title": "Prompt Template Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "task_type": {
+      "title": "Task Type",
+      "type": "string"
+    },
+    "user_id": {
+      "title": "User Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "execution_id",
+    "idempotency_key",
+    "correlation_id",
+    "organization_id",
+    "user_id",
+    "approved_role",
+    "ai_system_id",
+    "ai_system_version",
+    "agent_id",
+    "task_type",
+    "permitted_source_record_ids",
+    "data_classification",
+    "prompt_template_id",
+    "prompt_template_version",
+    "limits"
+  ],
+  "title": "AgentInputEnvelope",
+  "type": "object"
+}

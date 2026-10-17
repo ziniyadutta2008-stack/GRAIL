@@ -1,0 +1,135 @@
+# Reusable deployment of one verified, already-built commit to one environment.
+# Never rebuilds: it downloads commit-addressed artifacts and checks their digests.
+name: Deploy environment
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      commit:
+        required: true
+        type: string
+      reason:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    env:
+      ENVIRONMENT: ${{ inputs.environment }}
+      COMMIT: ${{ inputs.commit }}
+      ARTIFACT_BUCKET: ${{ vars.ARTIFACT_BUCKET }}
+      TF_ROOT: infrastructure/terraform/environments/${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.commit }}
+
+      - name: Stop when the environment is not configured
+        id: settings
+        env:
+          AWS_DEPLOY_ROLE_ARN: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+          AURORA_ENGINE_VERSION: ${{ vars.AURORA_ENGINE_VERSION }}
+        run: |
+          if [ -z "$AWS_DEPLOY_ROLE_ARN" ] || [ -z "$TF_STATE_BUCKET" ] || [ -z "$ARTIFACT_BUCKET" ] || [ -z "$AURORA_ENGINE_VERSION" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "The $ENVIRONMENT GitHub Environment is not configured. No AWS change was made. See docs/runbooks/github-and-aws-setup.md." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        if: steps.settings.outputs.ready == 'true'
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'eu-west-2' }}
+
+      - name: Download artifacts and verify digests against the build manifest
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          mkdir -p build
+          aws s3 cp "s3://$ARTIFACT_BUCKET/manifests/$COMMIT/build-manifest.json" build/ --no-progress
+          test "$(jq -r .commit build/build-manifest.json)" = "$COMMIT"
+          for part in backend frontend; do
+            key=$(jq -r ".artifacts.$part.key" build/build-manifest.json)
+            aws s3 cp "s3://$ARTIFACT_BUCKET/$key" "build/$part.zip" --no-progress
+            echo "$(jq -r ".artifacts.$part.sha256" build/build-manifest.json)  build/$part.zip" | sha256sum --check
+          done
+
+      - uses: hashicorp/setup-terraform@v4
+        if: steps.settings.outputs.ready == 'true'
+        with:
+          terraform_version: 1.16.5
+
+      - name: Terraform plan
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          TF_VAR_artifact_bucket: ${{ vars.ARTIFACT_BUCKET }}
+          TF_VAR_aurora_engine_version: ${{ vars.AURORA_ENGINE_VERSION }}
+          TF_VAR_alert_email: ${{ vars.ALERT_EMAIL }}
+        run: |
+          export TF_VAR_backend_package_key=$(jq -r .artifacts.backend.key build/build-manifest.json)
+          export TF_VAR_backend_package_sha256=$(jq -r .artifacts.backend.sha256_base64 build/build-manifest.json)
+          terraform -chdir="$TF_ROOT" init -input=false \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" -backend-config="region=${{ vars.AWS_REGION || 'eu-west-2' }}"
+          terraform -chdir="$TF_ROOT" plan -input=false -out=tfplan
+          {
+            echo "### Terraform plan: $ENVIRONMENT at $COMMIT"
+            echo '```'
+            terraform -chdir="$TF_ROOT" show -no-color tfplan | grep -E '^\s*# |^Plan:|No changes' || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Terraform apply (approved environment only)
+        if: steps.settings.outputs.ready == 'true'
+        run: terraform -chdir="$TF_ROOT" apply -input=false tfplan
+
+      - name: Database migrations (forward-only, ADR-0006)
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          echo "Migration runner through the Data API is a Stage 5 deliverable; the head is $(jq -r .migration_head build/build-manifest.json)." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish frontend (hashed assets first, entry document last)
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          bucket=$(terraform -chdir="$TF_ROOT" output -raw web_bucket)
+          distribution=$(terraform -chdir="$TF_ROOT" output -raw cloudfront_distribution_id)
+          mkdir -p build/web && unzip -q build/frontend.zip -d build/web
+          aws s3 sync build/web/assets "s3://$bucket/assets" --cache-control "public,max-age=31536000,immutable" --no-progress
+          aws s3 sync build/web "s3://$bucket" --exclude "assets/*" --exclude index.html --cache-control "public,max-age=300" --no-progress
+          aws s3 cp build/web/index.html "s3://$bucket/index.html" --cache-control "no-cache" --no-progress
+          aws cloudfront create-invalidation --distribution-id "$distribution" --paths /index.html > /dev/null
+
+      - name: Smoke test
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          url=$(terraform -chdir="$TF_ROOT" output -raw app_url)
+          curl -fsS --retry 5 --retry-delay 10 "$url/api/v1/health" | jq -e '.status == "ok"'
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$url/api/v1/me")" = "401"
+          curl -fsS "$url/" | grep -q '<div id="root">'
+          echo "Smoke test passed for $url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record deployment manifest
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          REASON: ${{ inputs.reason }}
+        run: |
+          jq --arg env "$ENVIRONMENT" --arg actor "$GITHUB_ACTOR" --arg run "$GITHUB_RUN_ID" --arg reason "$REASON" \
+             --arg deployed_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+             '. + {environment: $env, deployed_by: $actor, deploy_run_id: $run, reason: $reason, deployed_at: $deployed_at, result: "success"}' \
+             build/build-manifest.json > build/deployment.json
+          aws s3 cp build/deployment.json "s3://$ARTIFACT_BUCKET/deployments/$ENVIRONMENT/$COMMIT.json" --no-progress
+          aws s3 cp build/deployment.json "s3://$ARTIFACT_BUCKET/deployments/$ENVIRONMENT/latest.json" --no-progress

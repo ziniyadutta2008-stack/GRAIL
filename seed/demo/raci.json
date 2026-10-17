@@ -1,0 +1,65 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "records": [
+    {
+      "id": "raci-financeguard",
+      "ai_system_id": "financeguard-ai",
+      "title": "FinanceGuard AI governance RACI",
+      "version": 1,
+      "status": "Submitted",
+      "submitted_on": "2026-07-08",
+      "approver_role": "executive_approver",
+      "roles": ["executive_steering_committee", "ai_program_lead", "model_owner", "cyber_security_legal", "external_audit"],
+      "role_labels": {
+        "executive_steering_committee": "Executive Steering Committee",
+        "ai_program_lead": "AI Program Lead / Governance Manager",
+        "model_owner": "Model Owner / Business Sponsor",
+        "cyber_security_legal": "Cyber Security & Legal Teams",
+        "external_audit": "External Audit Partners"
+      },
+      "tasks": [
+        { "id": "fg-1", "name": "System selection and model fine-tuning approval", "assignments": { "executive_steering_committee": "A", "ai_program_lead": "C", "model_owner": "R", "cyber_security_legal": "C", "external_audit": "I" } },
+        { "id": "fg-2", "name": "Data privacy and PII boundary enforcement", "assignments": { "executive_steering_committee": "I", "ai_program_lead": "C", "model_owner": "R", "cyber_security_legal": "A", "external_audit": "I" } },
+        { "id": "fg-3", "name": "API gateway and hybrid cloud deployment oversight", "assignments": { "executive_steering_committee": "I", "ai_program_lead": "C", "model_owner": "A", "cyber_security_legal": "R", "external_audit": "I" } },
+        { "id": "fg-4", "name": "Continuous monitoring and performance review", "assignments": { "executive_steering_committee": "I", "ai_program_lead": "R", "model_owner": "A", "cyber_security_legal": "C", "external_audit": "I" } },
+        { "id": "fg-5", "name": "Exception identification and framework mitigation", "assignments": { "executive_steering_committee": "C", "ai_program_lead": "A", "model_owner": "R", "cyber_security_legal": "C", "external_audit": "I" } }
+      ],
+      "memo_summary": "Single-point accountability across selection, data protection, deployment, monitoring and exception management. Risk: operational accountability concentrates with the Model Owner across deployment and monitoring; the combined Cyber Security & Legal function should name separate security and privacy delegates.",
+      "synthetic": true,
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.2 RACI matrix and executive sign-off memo" }
+    },
+    {
+      "id": "raci-copilot",
+      "ai_system_id": "copilot-employee-support",
+      "title": "Copilot Employee Support Tool governance RACI (revised)",
+      "version": 2,
+      "status": "Submitted",
+      "submitted_on": "2026-09-30",
+      "approver_role": "executive_approver",
+      "roles": ["executive_leadership", "ai_model_owner", "audit_compliance", "it_operations"],
+      "role_labels": {
+        "executive_leadership": "Executive Leadership",
+        "ai_model_owner": "AI/Model Owner",
+        "audit_compliance": "Audit & Compliance",
+        "it_operations": "IT Operations"
+      },
+      "tasks": [
+        { "id": "cp-1", "name": "Approve AI governance policy", "assignments": { "executive_leadership": "A", "ai_model_owner": "C", "audit_compliance": "R", "it_operations": "I" } },
+        { "id": "cp-2", "name": "Configure and test the LLM", "assignments": { "executive_leadership": "I", "ai_model_owner": "A", "audit_compliance": "C", "it_operations": "R" } },
+        { "id": "cp-3", "name": "Define acceptable use criteria", "assignments": { "executive_leadership": "A", "ai_model_owner": "C", "audit_compliance": "R", "it_operations": "I" } },
+        { "id": "cp-4", "name": "Monitor model outputs post-launch", "assignments": { "executive_leadership": "I", "ai_model_owner": "A", "audit_compliance": "C", "it_operations": "R" } },
+        { "id": "cp-5", "name": "Conduct bias and fairness review", "assignments": { "executive_leadership": "I", "ai_model_owner": "A", "audit_compliance": "R", "it_operations": "C" } },
+        { "id": "cp-6", "name": "Manage user access and authentication", "assignments": { "executive_leadership": "I", "ai_model_owner": "R", "audit_compliance": "C", "it_operations": "A" } },
+        { "id": "cp-7", "name": "Escalate and respond to incidents", "assignments": { "executive_leadership": "I", "ai_model_owner": "A", "audit_compliance": "C", "it_operations": "R" } },
+        { "id": "cp-8", "name": "Maintain audit trail and compliance documentation", "assignments": { "executive_leadership": "I", "ai_model_owner": "R", "audit_compliance": "A", "it_operations": "C" } },
+        { "id": "cp-9", "name": "Communicate deployment status to stakeholders", "assignments": { "executive_leadership": "A", "ai_model_owner": "R", "audit_compliance": "C", "it_operations": "C" } },
+        { "id": "cp-10", "name": "Authorize final go-live decision", "assignments": { "executive_leadership": "A", "ai_model_owner": "R", "audit_compliance": "C", "it_operations": "C" } }
+      ],
+      "memo_summary": "Revised and validated against the single-point accountability requirement; sponsor sign-off requested before Sprint 1 and phased deployment.",
+      "synthetic": true,
+      "synthetic_addition": ["submitted_on"],
+      "provenance": { "source_file": "Copilot_AI_Governance_RACI_Submission_REVISED.pdf", "location": "pp.1-2 matrix, justifications and sign-off communication" }
+    }
+  ]
+}

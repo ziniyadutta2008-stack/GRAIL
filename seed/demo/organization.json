@@ -1,0 +1,22 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "data_as_of": "2026-10-17",
+  "organization": {
+    "id": "6b1f6a2e-3c1d-4f0a-9a57-1d2c0e5f7a01",
+    "name": "GRAIL Demo Organization",
+    "synthetic": true
+  },
+  "personas": [
+    { "id": "persona-executive", "subject": "demo-executive", "display_name": "Morgan Hale", "title": "Chief Risk Officer", "role": "executive_approver" },
+    { "id": "persona-governance", "subject": "demo-governance", "display_name": "Priya Raman", "title": "AI Governance Lead", "role": "governance_lead" },
+    { "id": "persona-system-owner", "subject": "demo-system-owner", "display_name": "Daniel Okafor", "title": "FinanceGuard AI Model Owner", "role": "system_owner" },
+    { "id": "persona-control-owner", "subject": "demo-control-owner", "display_name": "Elena Petrova", "title": "Data Protection Control Owner", "role": "control_owner" },
+    { "id": "persona-security", "subject": "demo-security", "display_name": "Samuel Brooks", "title": "Security Reviewer", "role": "security_reviewer" },
+    { "id": "persona-privacy", "subject": "demo-privacy", "display_name": "Aisha Karim", "title": "Privacy and Legal Reviewer", "role": "privacy_legal_reviewer" },
+    { "id": "persona-audit", "subject": "demo-audit", "display_name": "Lucas Meyer", "title": "Internal Audit Manager", "role": "internal_audit" },
+    { "id": "persona-platform", "subject": "demo-platform", "display_name": "Grace Lin", "title": "Platform Administrator", "role": "platform_admin" },
+    { "id": "persona-readonly", "subject": "demo-readonly", "display_name": "Tomás Silva", "title": "Read-only Reviewer", "role": "read_only_reviewer" }
+  ],
+  "provenance": { "source_file": null, "location": "Synthetic personas for CLAUDE.md section 6; not derived from a demonstration document." }
+}

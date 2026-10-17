@@ -1,0 +1,55 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "disclaimer": "Internal readiness assessment only. Not an auditor opinion or SOC 2 report.",
+  "records": [
+    {
+      "id": "soc2-analytics-service",
+      "ai_system_id": "ai-analytics-service",
+      "as_of": "2026-09-06",
+      "fieldwork_start": "2026-10-04",
+      "expected_recommendation": "Conditional Go",
+      "criteria": [
+        { "criterion_id": "CC1.2", "name": "Risk Assessment", "result": "Pass", "blocking": false, "note": "Annual assessment completed on schedule; mitigation plans exist." },
+        { "criterion_id": "CC2.1", "name": "Communication", "result": "Pass", "blocking": false, "note": "Security policies consistently communicated." },
+        { "criterion_id": "CC3.3", "name": "Access Control", "result": "Pass", "blocking": false, "note": "Quarterly access reviews completed; sampled permissions aligned to roles." },
+        { "criterion_id": "CC4.1", "name": "Process Monitoring", "result": "Drift", "blocking": false, "note": "On-call response exceeded the 15-minute SLA for 3 of 10 critical incidents." },
+        { "criterion_id": "CC5.1", "name": "Logical Access", "result": "Drift", "blocking": false, "note": "Two terminated employees retained access beyond the 24-hour SLA." },
+        { "criterion_id": "CC6.2", "name": "Change Management", "result": "Pass", "blocking": false, "note": "Sampled production changes had approvals and testing." },
+        {
+          "criterion_id": "CC7.1",
+          "name": "Encryption",
+          "result": "Fail",
+          "blocking": true,
+          "note": "Primary database with sensitive client data is not encrypted at rest; key management not implemented.",
+          "conditional_path": [
+            { "id": "cond-cc71", "description": "Enable encryption at rest for the primary database and implement key management.", "owner": "Infrastructure Security Lead", "due_date": "2026-09-20", "required_evidence": "Validated encryption configuration and key-management records", "met": false }
+          ]
+        },
+        { "criterion_id": "CC8.1", "name": "Incident Response", "result": "Pass", "blocking": false, "note": "Tabletop exercise demonstrated effective understanding of roles." }
+      ],
+      "mandatory_conditions": [
+        { "id": "cond-cc41", "description": "Enforce the 15-minute incident-response SLA and document follow-up monitoring.", "owner": "Security Operations Manager", "due_date": "2026-10-01", "required_evidence": "SLA report for the remediation period", "met": false },
+        { "id": "cond-cc51", "description": "Enforce the 24-hour termination-access SLA and document follow-up monitoring.", "owner": "Identity and Access Manager", "due_date": "2026-10-01", "required_evidence": "Revocation log sample for the remediation period", "met": false }
+      ],
+      "synthetic": true,
+      "synthetic_addition": ["fieldwork_start", "conditional_path.owner", "mandatory_conditions.owner"],
+      "provenance": { "source_file": "SOC 2 Audit Readiness Briefing.docx", "location": "Control Scoring Summary table and Recommendation section" }
+    },
+    {
+      "id": "soc2-financeguard",
+      "ai_system_id": "financeguard-ai",
+      "as_of": "2026-07-08",
+      "fieldwork_start": null,
+      "expected_recommendation": "No-Go",
+      "criteria": [
+        { "criterion_id": "CC6.1", "name": "Security: access and transmission", "result": "Drift", "source_status": "Partial", "blocking": false, "note": "Design plausible; current-period RBAC export, TLS configuration and access samples not provided." },
+        { "criterion_id": "CC6.3", "name": "Security: perimeter defense", "result": "Drift", "source_status": "Partial", "blocking": false, "note": "Hardening described; no vulnerability scan, adversarial test or prompt-injection validation." },
+        { "criterion_id": "CC7.1", "name": "Confidentiality: data retention and disposal", "result": "Fail", "blocking": true, "note": "No deletion logs, retention-job evidence, at-rest encryption configuration or disposal records." }
+      ],
+      "mandatory_conditions": [],
+      "synthetic": true,
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.5 SOC 2 evidence review and CISO recommendation" }
+    }
+  ]
+}

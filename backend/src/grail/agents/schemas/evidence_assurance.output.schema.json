@@ -1,0 +1,329 @@
+{
+  "$defs": {
+    "AgentStatus": {
+      "enum": [
+        "Completed",
+        "Needs Information",
+        "Rejected Input",
+        "Failed"
+      ],
+      "title": "AgentStatus",
+      "type": "string"
+    },
+    "EvidenceAssuranceProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "observations": {
+          "items": {
+            "$ref": "#/$defs/EvidenceObservation"
+          },
+          "title": "Observations",
+          "type": "array"
+        },
+        "unsupported_controls": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unsupported Controls",
+          "type": "array"
+        }
+      },
+      "required": [
+        "observations",
+        "unsupported_controls"
+      ],
+      "title": "EvidenceAssuranceProposal",
+      "type": "object"
+    },
+    "EvidenceObservation": {
+      "additionalProperties": false,
+      "properties": {
+        "apparent_sufficiency": {
+          "enum": [
+            "appears_sufficient",
+            "appears_insufficient",
+            "undetermined"
+          ],
+          "title": "Apparent Sufficiency",
+          "type": "string"
+        },
+        "control_id": {
+          "title": "Control Id",
+          "type": "string"
+        },
+        "evidence_id": {
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "freshness": {
+          "enum": [
+            "current",
+            "stale",
+            "expired",
+            "unknown"
+          ],
+          "title": "Freshness",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "relevance": {
+          "enum": [
+            "relevant",
+            "partially_relevant",
+            "not_relevant"
+          ],
+          "title": "Relevance",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "control_id",
+        "relevance",
+        "freshness",
+        "apparent_sufficiency",
+        "note"
+      ],
+      "title": "EvidenceObservation",
+      "type": "object"
+    },
+    "ExecutionMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "estimated_cost_usd": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Estimated Cost Usd",
+          "type": "number"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        }
+      },
+      "title": "ExecutionMetrics",
+      "type": "object"
+    },
+    "GenerationMode": {
+      "enum": [
+        "bedrock",
+        "deterministic_seed"
+      ],
+      "title": "GenerationMode",
+      "type": "string"
+    },
+    "ModelMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_mode": {
+          "$ref": "#/$defs/GenerationMode"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "prompt_template_id": {
+          "title": "Prompt Template Id",
+          "type": "string"
+        },
+        "prompt_template_version": {
+          "title": "Prompt Template Version",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        }
+      },
+      "required": [
+        "generation_mode",
+        "prompt_template_id",
+        "prompt_template_version"
+      ],
+      "title": "ModelMetadata",
+      "type": "object"
+    },
+    "SourceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "excerpt": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Excerpt"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Page or section reference.",
+          "title": "Location"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "record_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Version"
+        }
+      },
+      "required": [
+        "record_id"
+      ],
+      "title": "SourceReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": {
+      "const": "evidence_assurance",
+      "title": "Agent Id",
+      "type": "string"
+    },
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "confidence": {
+      "description": "Explanatory only; never used as an approval threshold.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "execution_id": {
+      "format": "uuid",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "metrics": {
+      "$ref": "#/$defs/ExecutionMetrics"
+    },
+    "missing_information": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelMetadata"
+    },
+    "proposal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EvidenceAssuranceProposal"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceReference"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/AgentStatus"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "execution_id",
+    "agent_id",
+    "status",
+    "sources",
+    "assumptions",
+    "missing_information",
+    "confidence",
+    "warnings",
+    "model",
+    "metrics",
+    "content_hash"
+  ],
+  "title": "EvidenceAssuranceOutput",
+  "type": "object"
+}

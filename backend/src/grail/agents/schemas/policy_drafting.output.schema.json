@@ -1,0 +1,333 @@
+{
+  "$defs": {
+    "AgentStatus": {
+      "enum": [
+        "Completed",
+        "Needs Information",
+        "Rejected Input",
+        "Failed"
+      ],
+      "title": "AgentStatus",
+      "type": "string"
+    },
+    "DraftPolicySection": {
+      "additionalProperties": false,
+      "properties": {
+        "cited_record_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Cited Record Ids",
+          "type": "array"
+        },
+        "heading": {
+          "enum": [
+            "purpose",
+            "scope",
+            "policy_statements",
+            "roles",
+            "enforcement",
+            "related_standards",
+            "assumptions"
+          ],
+          "title": "Heading",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "heading",
+        "text",
+        "cited_record_ids"
+      ],
+      "title": "DraftPolicySection",
+      "type": "object"
+    },
+    "ExecutionMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "estimated_cost_usd": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Estimated Cost Usd",
+          "type": "number"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        }
+      },
+      "title": "ExecutionMetrics",
+      "type": "object"
+    },
+    "GenerationMode": {
+      "enum": [
+        "bedrock",
+        "deterministic_seed"
+      ],
+      "title": "GenerationMode",
+      "type": "string"
+    },
+    "ModelMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_mode": {
+          "$ref": "#/$defs/GenerationMode"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "prompt_template_id": {
+          "title": "Prompt Template Id",
+          "type": "string"
+        },
+        "prompt_template_version": {
+          "title": "Prompt Template Version",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        }
+      },
+      "required": [
+        "generation_mode",
+        "prompt_template_id",
+        "prompt_template_version"
+      ],
+      "title": "ModelMetadata",
+      "type": "object"
+    },
+    "PolicySectionProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/DraftPolicySection"
+          },
+          "minItems": 1,
+          "title": "Sections",
+          "type": "array"
+        },
+        "topic": {
+          "enum": [
+            "access_and_authorization",
+            "monitoring_and_anomaly_detection",
+            "incident_classification_and_response",
+            "model_change_validation_and_rollback",
+            "inference_data_handling",
+            "vendor_and_supply_chain_security"
+          ],
+          "title": "Topic",
+          "type": "string"
+        },
+        "unresolved_assumptions": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unresolved Assumptions",
+          "type": "array"
+        },
+        "unverified_mappings": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unverified Mappings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "topic",
+        "sections",
+        "unresolved_assumptions",
+        "unverified_mappings"
+      ],
+      "title": "PolicySectionProposal",
+      "type": "object"
+    },
+    "SourceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "excerpt": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Excerpt"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Page or section reference.",
+          "title": "Location"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "record_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Version"
+        }
+      },
+      "required": [
+        "record_id"
+      ],
+      "title": "SourceReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": {
+      "const": "policy_drafting",
+      "title": "Agent Id",
+      "type": "string"
+    },
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "confidence": {
+      "description": "Explanatory only; never used as an approval threshold.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "execution_id": {
+      "format": "uuid",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "metrics": {
+      "$ref": "#/$defs/ExecutionMetrics"
+    },
+    "missing_information": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelMetadata"
+    },
+    "proposal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PolicySectionProposal"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceReference"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/AgentStatus"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "execution_id",
+    "agent_id",
+    "status",
+    "sources",
+    "assumptions",
+    "missing_information",
+    "confidence",
+    "warnings",
+    "model",
+    "metrics",
+    "content_hash"
+  ],
+  "title": "PolicyDraftingOutput",
+  "type": "object"
+}

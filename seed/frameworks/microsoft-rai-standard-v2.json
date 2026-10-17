@@ -1,0 +1,36 @@
+{
+  "id": "microsoft-rai-standard-v2",
+  "publisher": "Microsoft",
+  "title": "Microsoft Responsible AI Standard, v2: General Requirements",
+  "version": "v2",
+  "published": "2022-06",
+  "source_url": "https://www.microsoft.com/en-us/ai/principles-and-approach",
+  "review_date": "2027-04-17",
+  "content_policy": "Goal identifiers and short titles only. Summaries are organization-authored interpretations; no standard text is reproduced.",
+  "synthetic": true,
+  "provenance": { "source_file": "Microsoft-Responsible-AI-Standard-v2-General-Requirements-3.pdf", "location": "Goal headings" },
+  "goals": [
+    { "id": "A1", "principle": "Accountability", "title": "Impact assessment", "summary": "Assess and periodically review the system's impact on people and society." },
+    { "id": "A2", "principle": "Accountability", "title": "Oversight of significant adverse impacts", "summary": "Identify sensitive and restricted uses and route them to oversight." },
+    { "id": "A3", "principle": "Accountability", "title": "Fit for purpose", "summary": "Show with evidence that the system solves each intended use." },
+    { "id": "A4", "principle": "Accountability", "title": "Data governance and management", "summary": "Define, evaluate and document data requirements and quality." },
+    { "id": "A5", "principle": "Accountability", "title": "Human oversight and control", "summary": "Design and test the means for people to oversee, intervene in and override the system." },
+    { "id": "T1", "principle": "Transparency", "title": "System intelligibility for decision making", "summary": "Help people who rely on outputs understand them well enough to decide." },
+    { "id": "T2", "principle": "Transparency", "title": "Communication to stakeholders", "summary": "Document capabilities and limitations for stakeholders." },
+    { "id": "T3", "principle": "Transparency", "title": "Disclosure of AI interaction", "summary": "Tell people when they are interacting with an AI system." },
+    { "id": "F1", "principle": "Fairness", "title": "Quality of service", "summary": "Evaluate comparable quality of service across demographic groups." },
+    { "id": "F2", "principle": "Fairness", "title": "Allocation of resources and opportunities", "summary": "Minimize disparities in consequential allocation outcomes." },
+    { "id": "F3", "principle": "Fairness", "title": "Minimization of stereotyping, demeaning, and erasing outputs", "summary": "Reduce harmful representational outputs." },
+    { "id": "RS1", "principle": "Reliability and Safety", "title": "Reliability and safety guidance", "summary": "Define safe operating conditions and failure guidance." },
+    { "id": "RS2", "principle": "Reliability and Safety", "title": "Failures and remediations", "summary": "Plan for, detect and remediate failures, including harmful outputs." },
+    { "id": "RS3", "principle": "Reliability and Safety", "title": "Ongoing monitoring, feedback, and evaluation", "summary": "Monitor in production and act on feedback." },
+    { "id": "PS1", "principle": "Privacy and Security", "title": "Privacy Standard compliance", "summary": "Apply the organization's privacy requirements." },
+    { "id": "PS2", "principle": "Privacy and Security", "title": "Security Policy compliance", "summary": "Apply the organization's security requirements." },
+    { "id": "I1", "principle": "Inclusiveness", "title": "Accessibility Standards compliance", "summary": "Apply accessibility requirements." }
+  ],
+  "organization_references": [
+    { "ref": "2.4", "label": "Transparency", "maps_to": ["T2"], "verification": "pending" },
+    { "ref": "3.1", "label": "Accountability: AI incident response", "maps_to": ["RS2"], "verification": "pending" },
+    { "ref": "4.2", "label": "Human-centricity and control", "maps_to": ["A5"], "verification": "pending" }
+  ]
+}

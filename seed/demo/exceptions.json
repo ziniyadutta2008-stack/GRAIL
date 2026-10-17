@@ -1,0 +1,89 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "records": [
+    {
+      "id": "REQ-0881",
+      "title": "Data retention policy exception",
+      "policy": "Data Retention Policy",
+      "requesting_team": "Product Analytics",
+      "requested_deviation": "Extend retention of user engagement data from 90 to 180 days.",
+      "business_justification": "Longer history needed to identify long-term user behaviour patterns for a new analytics project.",
+      "duration_days": 180,
+      "risk": { "likelihood": "Medium", "scope": "Medium", "control_effectiveness": "Low-Moderate", "overall": "Medium" },
+      "decision": "Approved with Conditions",
+      "state": "Active",
+      "decided_on": "2026-09-10",
+      "decided_by_role": "GRC Analyst",
+      "activation_date": "2026-09-10",
+      "midpoint_review_date": "2026-12-09",
+      "expiry_date": "2027-03-09",
+      "escalated_to": "Legal and Privacy",
+      "conditions": [
+        "Role-based access restricted to named Product Analytics personnel with documented need.",
+        "All access logged and reviewed bi-weekly by GRC or the designated Data Steward.",
+        "PII anonymized or pseudonymized where not needed for the approved analysis.",
+        "Legal and Privacy confirm 180-day retention is permissible.",
+        "Formal review at the 90-day midpoint.",
+        "Exception expires after 180 days; any further retention needs new approval."
+      ],
+      "synthetic": true,
+      "synthetic_addition": ["state", "activation_date", "midpoint_review_date", "expiry_date"],
+      "provenance": { "source_file": "Policy_Exception_Decision_Records_REQ-0881_REQ-0882.pdf", "location": "pp.2-3 REQ-0881 sections 1-5" }
+    },
+    {
+      "id": "REQ-0882",
+      "title": "Access control policy exception",
+      "policy": "Access Control Policy",
+      "requesting_team": "AI Engineering",
+      "requested_deviation": "Temporary administrator-level production access for two engineers.",
+      "business_justification": "Real-time diagnostics for performance degradation in a newly deployed AI model.",
+      "duration_days": 2,
+      "risk": { "likelihood": "High", "scope": "High", "control_effectiveness": "Moderate with mandatory enhanced controls", "overall": "High" },
+      "decision": "Approved with Conditions",
+      "state": "Closed",
+      "decided_on": "2026-09-10",
+      "decided_by_role": "GRC Analyst",
+      "executive_approval": { "role": "executive_approver", "persona": "persona-executive", "date": "2026-09-10", "synthetic_addition": true },
+      "security_review": { "role": "security_reviewer", "persona": "persona-security", "date": "2026-09-10", "synthetic_addition": true },
+      "activation_date": "2026-09-11",
+      "expiry_date": "2026-09-13",
+      "escalated_to": "CISO on any condition breach",
+      "conditions": [
+        "Privileged access limited to the AI model components required for diagnostics.",
+        "Access expires automatically after 48 hours through privileged identity management.",
+        "All commands, configuration changes and data queries logged in real time and independently reviewed within 24 hours of expiry.",
+        "Senior engineer or GRC representative provides second-person oversight; no unsupervised administrator access.",
+        "CAB-approved change or emergency-change record in place before access begins.",
+        "Rollback plan documented and acknowledged by the Engineering Manager.",
+        "Post-access summary of actions, findings and production changes within 24 hours."
+      ],
+      "synthetic": true,
+      "synthetic_addition": ["state", "activation_date", "expiry_date"],
+      "provenance": { "source_file": "Policy_Exception_Decision_Records_REQ-0881_REQ-0882.pdf", "location": "pp.4-5 REQ-0882 sections 1-5" }
+    },
+    {
+      "id": "EX-2026-001",
+      "title": "Replace continuous monitoring with weekly manual review",
+      "policy": "POL-MON-02",
+      "ai_system_id": "financeguard-ai",
+      "requesting_team": "LLM Engineering Team",
+      "requested_deviation": "Replace continuous automated model monitoring with structured weekly manual review for 90 days.",
+      "business_justification": "Reduce monitoring overhead and improve deployment pipeline speed.",
+      "duration_days": 90,
+      "risk": { "data_sensitivity": "High", "detection_timeliness": "High", "control_reliability": "Low-Moderate", "audit_impact": "High", "overall": "High" },
+      "decision": "Denied",
+      "state": "Denied",
+      "decided_on": "2026-07-08",
+      "decided_by_role": "AI Governance Program Lead and Information Security Steering Committee",
+      "conditions": [],
+      "resubmission_path": [
+        "Complete A.6.2 monitoring implementation with current telemetry and alert-threshold evidence.",
+        "Close the CC7.1 confidentiality evidence failure.",
+        "Complete prompt-injection and adversarial validation for A.8.3 and CC6.3."
+      ],
+      "synthetic": true,
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "pp.6-8 policy exception review and decision record" }
+    }
+  ]
+}

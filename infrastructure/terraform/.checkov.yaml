@@ -1,0 +1,46 @@
+# Checkov configuration for GRAIL. Every skip below is a deliberate, documented decision for
+# the portfolio environments; revisit before production use (docs/architecture/security-boundaries.md).
+compact: true
+quiet: true
+framework:
+  - terraform
+skip-check:
+  # Customer-managed KMS keys are not used; AWS-managed encryption is in place (ADR-0009).
+  - CKV_AWS_145 # S3 SSE-KMS (SSE-S3 used)
+  - CKV_AWS_158 # CloudWatch Logs KMS
+  - CKV_AWS_173 # Lambda environment KMS (no secrets in environment)
+  - CKV_AWS_327 # Aurora CMK (aws/rds key used, storage encrypted)
+  - CKV_AWS_337 # SSM CMK (aws/ssm key used for the SecureString)
+  - CKV2_AWS_34 # Non-secret String parameters (AI switches and quotas)
+  # Cost controls for a scale-to-zero portfolio (docs/architecture/cost-controls.md).
+  - CKV_AWS_18 # S3 server access logging
+  - CKV_AWS_86 # CloudFront access logging
+  - CKV_AWS_144 # S3 cross-region replication
+  - CKV2_AWS_62 # S3 event notifications
+  - CKV2_AWS_11 # VPC flow logs (database VPC has no internet path and no ingress)
+  - CKV2_AWS_27 # Aurora query logging
+  - CKV_AWS_324 # Aurora log exports
+  - CKV_AWS_353 # Performance Insights
+  - CKV_AWS_118 # Enhanced monitoring
+  - CKV2_AWS_8 # AWS Backup plan (automated Aurora backups are configured)
+  - CKV_AWS_310 # CloudFront origin failover
+  - CKV2_AWS_31 # WAF request logging (planned; must exclude sensitive request content)
+  - CKV_AWS_284 # Step Functions X-Ray tracing (sampling enabled later where useful)
+  - CKV_AWS_50 # Lambda X-Ray tracing on agent workers (same)
+  # Architecture decisions.
+  - CKV_AWS_117 # Lambdas run outside a VPC and use the Data API, avoiding a NAT Gateway
+  - CKV_AWS_116 # API and agent Lambdas are invoked synchronously; failures surface to the caller or Step Functions
+  - CKV_AWS_272 # Code signing deferred; packages are digest-verified from the build manifest
+  - CKV_AWS_285 # Step Functions logs errors only, without execution data, to avoid recording governance content
+  - CKV_AWS_309 # GET /api/v1/health is intentionally unauthenticated and reveals nothing
+  - CKV_AWS_374 # No geo restriction for a portfolio demo
+  - CKV2_AWS_42 # Default CloudFront certificate until a custom domain is enabled
+  - CKV_AWS_174 # Minimum TLS version requires a custom certificate (same)
+  - CKV_AWS_139 # Aurora deletion protection is variable-driven: off only in development (allow_destroy)
+  - CKV_AWS_394 # Two subnets use the first two available AZs; a new AZ does not change their order
+  # False positives: the bootstrap buckets are created with for_each and do have versioning,
+  # public access blocks and lifecycle rules; the web ACL includes KnownBadInputs (Log4j).
+  - CKV_AWS_21
+  - CKV2_AWS_6
+  - CKV2_AWS_61
+  - CKV2_AWS_47

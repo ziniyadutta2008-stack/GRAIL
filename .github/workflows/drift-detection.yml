@@ -1,0 +1,73 @@
+name: Drift detection
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: [development, test, production]
+    concurrency:
+      group: drift-${{ matrix.environment }}
+      cancel-in-progress: true
+    env:
+      ENVIRONMENT: ${{ matrix.environment }}
+      TF_ROOT: infrastructure/terraform/environments/${{ matrix.environment }}
+      BUCKET: ${{ vars.ARTIFACT_BUCKET }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Stop when drift detection is not configured
+        id: settings
+        env:
+          AWS_CI_ROLE_ARN: ${{ vars.AWS_CI_ROLE_ARN }}
+          TF_STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+        run: |
+          if [ -z "$AWS_CI_ROLE_ARN" ] || [ -z "$TF_STATE_BUCKET" ] || [ -z "$BUCKET" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Drift detection for $ENVIRONMENT is not configured." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        if: steps.settings.outputs.ready == 'true'
+        with:
+          role-to-assume: ${{ vars.AWS_CI_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'eu-west-2' }}
+
+      - uses: hashicorp/setup-terraform@v4
+        if: steps.settings.outputs.ready == 'true'
+        with:
+          terraform_version: 1.16.5
+
+      # Read-only role, no state lock, refresh-only: drift is reported, never corrected here.
+      - name: Refresh-only plan against the last deployed manifest
+        if: steps.settings.outputs.ready == 'true'
+        run: |
+          if ! aws s3 cp "s3://$BUCKET/deployments/$ENVIRONMENT/latest.json" latest.json --no-progress; then
+            echo "$ENVIRONMENT has not been deployed; nothing to compare." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          export TF_VAR_artifact_bucket="$BUCKET"
+          export TF_VAR_backend_package_key=$(jq -r .artifacts.backend.key latest.json)
+          export TF_VAR_backend_package_sha256=$(jq -r .artifacts.backend.sha256_base64 latest.json)
+          export TF_VAR_aurora_engine_version="${{ vars.AURORA_ENGINE_VERSION }}"
+          terraform -chdir="$TF_ROOT" init -input=false \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" -backend-config="region=${{ vars.AWS_REGION || 'eu-west-2' }}"
+          set +e
+          terraform -chdir="$TF_ROOT" plan -refresh-only -lock=false -input=false -detailed-exitcode -no-color > plan.txt
+          code=$?
+          set -e
+          { echo "### Drift: $ENVIRONMENT"; echo '```'; grep -E '^\s*# |^Plan:|No changes' plan.txt || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$code" -eq 2 ]; then echo "::error::Unexplained drift detected in $ENVIRONMENT"; exit 1; fi
+          exit "$code"

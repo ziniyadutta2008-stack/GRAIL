@@ -1,0 +1,343 @@
+{
+  "$defs": {
+    "AgentStatus": {
+      "enum": [
+        "Completed",
+        "Needs Information",
+        "Rejected Input",
+        "Failed"
+      ],
+      "title": "AgentStatus",
+      "type": "string"
+    },
+    "ExceptionAnalysisProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "exception_request_id": {
+          "title": "Exception Request Id",
+          "type": "string"
+        },
+        "non_binding_recommendation": {
+          "description": "Advisory only. A named human reviewer makes the decision.",
+          "enum": [
+            "consider_approval_with_conditions",
+            "consider_denial",
+            "return_for_information"
+          ],
+          "title": "Non Binding Recommendation",
+          "type": "string"
+        },
+        "proposed_conditions": {
+          "items": {
+            "$ref": "#/$defs/ProposedCondition"
+          },
+          "title": "Proposed Conditions",
+          "type": "array"
+        },
+        "risk_narrative": {
+          "title": "Risk Narrative",
+          "type": "string"
+        },
+        "suggested_inherent_risk": {
+          "$ref": "#/$defs/Severity"
+        },
+        "suggested_residual_risk": {
+          "$ref": "#/$defs/Severity"
+        }
+      },
+      "required": [
+        "exception_request_id",
+        "suggested_inherent_risk",
+        "suggested_residual_risk",
+        "risk_narrative",
+        "proposed_conditions",
+        "non_binding_recommendation"
+      ],
+      "title": "ExceptionAnalysisProposal",
+      "type": "object"
+    },
+    "ExecutionMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "estimated_cost_usd": {
+          "default": 0.0,
+          "minimum": 0,
+          "title": "Estimated Cost Usd",
+          "type": "number"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "latency_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Latency Ms",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        }
+      },
+      "title": "ExecutionMetrics",
+      "type": "object"
+    },
+    "GenerationMode": {
+      "enum": [
+        "bedrock",
+        "deterministic_seed"
+      ],
+      "title": "GenerationMode",
+      "type": "string"
+    },
+    "ModelMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "generation_mode": {
+          "$ref": "#/$defs/GenerationMode"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "prompt_template_id": {
+          "title": "Prompt Template Id",
+          "type": "string"
+        },
+        "prompt_template_version": {
+          "title": "Prompt Template Version",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider"
+        }
+      },
+      "required": [
+        "generation_mode",
+        "prompt_template_id",
+        "prompt_template_version"
+      ],
+      "title": "ModelMetadata",
+      "type": "object"
+    },
+    "ProposedCondition": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "evidence_required": {
+          "title": "Evidence Required",
+          "type": "string"
+        },
+        "owner_role": {
+          "$ref": "#/$defs/Role"
+        }
+      },
+      "required": [
+        "description",
+        "evidence_required",
+        "owner_role"
+      ],
+      "title": "ProposedCondition",
+      "type": "object"
+    },
+    "Role": {
+      "enum": [
+        "platform_admin",
+        "governance_lead",
+        "system_owner",
+        "control_owner",
+        "security_reviewer",
+        "privacy_legal_reviewer",
+        "internal_audit",
+        "executive_approver",
+        "read_only_reviewer"
+      ],
+      "title": "Role",
+      "type": "string"
+    },
+    "Severity": {
+      "enum": [
+        "Critical",
+        "High",
+        "Medium",
+        "Low"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SourceReference": {
+      "additionalProperties": false,
+      "properties": {
+        "excerpt": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Excerpt"
+        },
+        "location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Page or section reference.",
+          "title": "Location"
+        },
+        "record_id": {
+          "title": "Record Id",
+          "type": "string"
+        },
+        "record_version": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Record Version"
+        }
+      },
+      "required": [
+        "record_id"
+      ],
+      "title": "SourceReference",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "agent_id": {
+      "const": "policy_exception",
+      "title": "Agent Id",
+      "type": "string"
+    },
+    "assumptions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Assumptions",
+      "type": "array"
+    },
+    "confidence": {
+      "description": "Explanatory only; never used as an approval threshold.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Confidence",
+      "type": "string"
+    },
+    "content_hash": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Hash",
+      "type": "string"
+    },
+    "execution_id": {
+      "format": "uuid",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "metrics": {
+      "$ref": "#/$defs/ExecutionMetrics"
+    },
+    "missing_information": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Information",
+      "type": "array"
+    },
+    "model": {
+      "$ref": "#/$defs/ModelMetadata"
+    },
+    "proposal": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ExceptionAnalysisProposal"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceReference"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "status": {
+      "$ref": "#/$defs/AgentStatus"
+    },
+    "warnings": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Warnings",
+      "type": "array"
+    }
+  },
+  "required": [
+    "execution_id",
+    "agent_id",
+    "status",
+    "sources",
+    "assumptions",
+    "missing_information",
+    "confidence",
+    "warnings",
+    "model",
+    "metrics",
+    "content_hash"
+  ],
+  "title": "PolicyExceptionOutput",
+  "type": "object"
+}

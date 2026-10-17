@@ -1,0 +1,24 @@
+{
+  "id": "soc2-tsc",
+  "publisher": "AICPA",
+  "title": "Trust Services Criteria (organization-authored readiness mapping)",
+  "version": "2017 (revised points of focus 2022)",
+  "source_url": "https://www.aicpa-cima.com/resources/landing/system-and-organization-controls-soc-suite-of-services",
+  "review_date": "2027-04-17",
+  "content_policy": "Criterion identifiers with the organization's own control names. GRAIL performs internal readiness assessment only; it does not issue a SOC 2 report or auditor opinion.",
+  "synthetic": true,
+  "provenance": { "source_file": "SOC 2 Audit Readiness Briefing.docx", "location": "Control Scoring Summary" },
+  "criteria": [
+    { "id": "CC1.2", "organization_control_name": "Risk Assessment" },
+    { "id": "CC2.1", "organization_control_name": "Communication" },
+    { "id": "CC3.3", "organization_control_name": "Access Control" },
+    { "id": "CC4.1", "organization_control_name": "Process Monitoring" },
+    { "id": "CC5.1", "organization_control_name": "Logical Access" },
+    { "id": "CC6.1", "organization_control_name": "Access and transmission security" },
+    { "id": "CC6.2", "organization_control_name": "Change Management" },
+    { "id": "CC6.3", "organization_control_name": "Perimeter defense" },
+    { "id": "CC7.1", "organization_control_name": "Encryption; data retention and disposal" },
+    { "id": "CC8.1", "organization_control_name": "Incident Response" }
+  ],
+  "note": "Control names follow the demonstration documents, which label criteria in the organization's own terms; they are not the AICPA criterion titles."
+}

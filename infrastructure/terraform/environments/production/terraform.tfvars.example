@@ -1,0 +1,7 @@
+# Copy to terraform.tfvars (git-ignored). No secrets belong here.
+# CI supplies artifact_bucket, backend_package_key and backend_package_sha256 from the manifest.
+artifact_bucket        = "grail-artifacts-<account-id>-eu-west-2"
+backend_package_key    = "backend/<commit-sha>/grail-backend.zip"
+backend_package_sha256 = "<base64-sha256-from-manifest>"
+aurora_engine_version  = "<verified-version, see docs/architecture/cost-controls.md>"
+alert_email            = ""

@@ -1,0 +1,82 @@
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: Full commit SHA of the deployed artifact set to promote
+        required: true
+        type: string
+      target_environment:
+        description: Promotion target
+        required: true
+        type: choice
+        options: [test, production]
+      release_tag:
+        description: Annotated release tag on the commit (required for production)
+        required: false
+        type: string
+      reason:
+        description: Release reason recorded in the deployment manifest
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: promote-${{ inputs.target_environment }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Verify the commit and, for production, the annotated release tag
+        env:
+          COMMIT: ${{ inputs.commit }}
+          TARGET: ${{ inputs.target_environment }}
+          TAG: ${{ inputs.release_tag }}
+        run: |
+          [[ "$COMMIT" =~ ^[0-9a-f]{40}$ ]] || { echo "commit must be a full 40-character SHA"; exit 1; }
+          git cat-file -e "$COMMIT^{commit}"
+          git merge-base --is-ancestor "$COMMIT" origin/main || { echo "commit is not on main"; exit 1; }
+          if [ "$TARGET" = "production" ]; then
+            [ -n "$TAG" ] || { echo "production requires release_tag"; exit 1; }
+            [ "$(git cat-file -t "refs/tags/$TAG")" = "tag" ] || { echo "$TAG must be an annotated tag"; exit 1; }
+            [ "$(git rev-list -n 1 "$TAG")" = "$COMMIT" ] || { echo "$TAG does not point to $COMMIT"; exit 1; }
+          fi
+
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_CI_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'eu-west-2' }}
+
+      - name: Verify the preceding environment deployed this exact commit successfully
+        env:
+          COMMIT: ${{ inputs.commit }}
+          TARGET: ${{ inputs.target_environment }}
+          BUCKET: ${{ vars.ARTIFACT_BUCKET }}
+        run: |
+          source_env=$([ "$TARGET" = "production" ] && echo test || echo development)
+          aws s3 cp "s3://$BUCKET/deployments/$source_env/$COMMIT.json" previous.json --no-progress
+          jq -e --arg c "$COMMIT" '.commit == $c and .result == "success"' previous.json
+          echo "Promoting $COMMIT from $source_env to $TARGET." >> "$GITHUB_STEP_SUMMARY"
+
+  deploy:
+    needs: verify
+    permissions:
+      contents: read
+      id-token: write
+    uses: ./.github/workflows/deploy-environment.yml
+    with:
+      environment: ${{ inputs.target_environment }}
+      commit: ${{ inputs.commit }}
+      reason: ${{ inputs.reason }}

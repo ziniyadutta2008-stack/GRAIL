@@ -1,0 +1,39 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "records": [
+    {
+      "id": "CD-2026-007",
+      "title": "FinanceGuard AI: external audit entry and scaling",
+      "ai_system_id": "financeguard-ai",
+      "state": "Approved",
+      "decision": "No-Go",
+      "decided_on": "2026-07-08",
+      "decided_by": "persona-executive",
+      "summary": "No-Go for external audit entry and further scaling until critical evidence and control gaps close. Operation continues only within the existing restricted user scope.",
+      "conditions": [
+        { "description": "Produce retention, deletion and at-rest encryption evidence sufficient to move CC7.1 to Pass.", "owner": "Cyber Security & Legal Teams", "due_date": "2026-10-31" },
+        { "description": "Provide current API gateway authorization and encrypted-transmission evidence for CC6.1.", "owner": "Cyber Security & Legal Teams", "due_date": "2026-10-31" },
+        { "description": "Complete perimeter, vulnerability and prompt-injection testing for CC6.3.", "owner": "AI Program Lead / Governance Manager", "due_date": "2026-11-30" }
+      ],
+      "follow_up": "Governance reassesses audit readiness once milestones are independently validated and presents a revised decision.",
+      "synthetic": true,
+      "synthetic_addition": ["decided_by", "conditions.due_date", "state"],
+      "provenance": { "source_file": "FinanceGuard_AI_Governance_and_Compliance_Portfolio.pdf", "location": "p.1 executive recommendation and p.5 CISO recommendation" }
+    },
+    {
+      "id": "CD-2026-011",
+      "title": "Charter scope expansion and risk-tiered exception approval",
+      "ai_system_id": null,
+      "state": "Submitted",
+      "decision": null,
+      "decided_on": null,
+      "decided_by": null,
+      "summary": "Approve the Q2 charter review proposals: risk-tiered exception approval with a 30-day SLA and charter scope covering every department that builds or procures AI.",
+      "conditions": [],
+      "follow_up": "Governance Lead drafts the amended charter version after decision.",
+      "synthetic": true,
+      "provenance": { "source_file": "KPI_Recommendation_Memo.pdf", "location": "Finding 1 and Finding 2 recommended changes" }
+    }
+  ]
+}

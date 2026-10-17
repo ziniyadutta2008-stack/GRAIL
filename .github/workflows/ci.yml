@@ -1,0 +1,175 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - name: Playwright smoke test against the local dev server
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test --project=desktop --project=mobile
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: frontend/playwright-report
+          retention-days: 7
+
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - name: Unit, contract, seed and migration tests with branch coverage
+        run: uv run pytest --cov --cov-branch --cov-report=term --cov-fail-under=80
+      - name: Agent JSON schemas match the Pydantic contracts
+        run: uv run python scripts/export_agent_schemas.py --check
+      - name: Render migrations offline
+        run: uv run alembic upgrade head --sql > /dev/null
+
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v7
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: 1.16.5
+      - run: terraform fmt -check -recursive
+      - name: Validate every root without a backend
+        run: |
+          for root in bootstrap environments/development environments/test environments/production; do
+            terraform -chdir="$root" init -backend=false -input=false
+            terraform -chdir="$root" validate
+          done
+      - uses: terraform-linters/setup-tflint@v6
+      - run: tflint --init && tflint --recursive --config "$(pwd)/.tflint.hcl" --format compact
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Checkov infrastructure scan
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: infrastructure/terraform
+          framework: terraform
+          config_file: infrastructure/terraform/.checkov.yaml
+
+  workflows:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: actionlint
+        run: |
+          bash <(curl -fsSL https://raw.githubusercontent.com/rhysd/actionlint/v1.7.12/scripts/download-actionlint.bash) 1.7.12
+          ./actionlint -color
+
+  build:
+    name: Build immutable artifacts
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [frontend, backend, terraform, workflows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: astral-sh/setup-uv@v10
+      - name: Build backend Lambda package
+        id: backend
+        run: echo "result=$(uv run --project backend python scripts/package_backend.py --output build/grail-backend.zip | tail -n 1)" >> "$GITHUB_OUTPUT"
+      - name: Build frontend bundle
+        working-directory: frontend
+        run: npm ci && npm run build && (cd dist && zip -qrX ../../build/grail-frontend.zip .)
+      - name: Write build manifest
+        env:
+          BACKEND: ${{ steps.backend.outputs.result }}
+        run: |
+          jq -n \
+            --arg commit "$GITHUB_SHA" \
+            --arg run "$GITHUB_RUN_ID" \
+            --arg built_at "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+            --arg migration_head "$(grep -h '^revision' backend/migrations/versions/*.py | sed 's/.*"\(.*\)"/\1/' | sort | tail -n 1)" \
+            --arg frontend_sha256 "$(sha256sum build/grail-frontend.zip | cut -d' ' -f1)" \
+            --argjson backend "$BACKEND" \
+            '{commit: $commit, ci_run_id: $run, built_at: $built_at, migration_head: $migration_head,
+              artifacts: {
+                backend: {key: "backend/\($commit)/grail-backend.zip", sha256: $backend.sha256, sha256_base64: $backend.sha256_base64},
+                frontend: {key: "frontend/\($commit)/grail-frontend.zip", sha256: $frontend_sha256}}}' \
+            > build/build-manifest.json
+          cat build/build-manifest.json
+      - uses: actions/upload-artifact@v7
+        with:
+          name: release-${{ github.sha }}
+          path: |
+            build/grail-backend.zip
+            build/grail-frontend.zip
+            build/build-manifest.json
+          retention-days: 30
+      - name: Stop when artifact publishing is not configured
+        id: settings
+        env:
+          AWS_CI_ROLE_ARN: ${{ vars.AWS_CI_ROLE_ARN }}
+          ARTIFACT_BUCKET: ${{ vars.ARTIFACT_BUCKET }}
+        run: |
+          if [ -z "$AWS_CI_ROLE_ARN" ] || [ -z "$ARTIFACT_BUCKET" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Artifact publishing is not configured; artifacts are kept as a workflow artifact only." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: aws-actions/configure-aws-credentials@v6
+        if: steps.settings.outputs.ready == 'true'
+        with:
+          role-to-assume: ${{ vars.AWS_CI_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'eu-west-2' }}
+      - name: Publish commit-addressed artifacts
+        if: steps.settings.outputs.ready == 'true'
+        env:
+          BUCKET: ${{ vars.ARTIFACT_BUCKET }}
+        run: |
+          aws s3 cp build/grail-backend.zip "s3://$BUCKET/backend/$GITHUB_SHA/grail-backend.zip" --no-progress
+          aws s3 cp build/grail-frontend.zip "s3://$BUCKET/frontend/$GITHUB_SHA/grail-frontend.zip" --no-progress
+          aws s3 cp build/build-manifest.json "s3://$BUCKET/manifests/$GITHUB_SHA/build-manifest.json" --no-progress

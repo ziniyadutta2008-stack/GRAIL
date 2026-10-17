@@ -1,0 +1,210 @@
+{
+  "synthetic": true,
+  "label": "Synthetic demonstration data",
+  "calculation_version": "kpi-calc-1",
+  "periods": [
+    "2026-Q1",
+    "2026-Q2"
+  ],
+  "records": [
+    {
+      "id": "kpi-policy-adoption",
+      "name": "Policy Adoption",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "target": {
+        "operator": "gt",
+        "value": 95
+      },
+      "warning": {
+        "operator": "lt",
+        "value": 95
+      },
+      "critical": {
+        "operator": "lt",
+        "value": 80
+      },
+      "owner": "persona-governance",
+      "observations": {
+        "2026-Q1": 75,
+        "2026-Q2": 98
+      },
+      "source_note": "All in-scope departments completed mandatory training.",
+      "synthetic": true,
+      "synthetic_addition": [
+        "warning",
+        "critical",
+        "owner"
+      ],
+      "provenance": {
+        "source_file": "Core Governance KPI.docx",
+        "location": "Q2 dashboard row: Policy Adoption"
+      },
+      "source_trend": "Positive"
+    },
+    {
+      "id": "kpi-control-completion",
+      "name": "Control Completion",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "target": {
+        "operator": "gt",
+        "value": 80
+      },
+      "warning": {
+        "operator": "lt",
+        "value": 80
+      },
+      "critical": {
+        "operator": "lt",
+        "value": 60
+      },
+      "owner": "persona-governance",
+      "observations": {
+        "2026-Q1": 60,
+        "2026-Q2": 85
+      },
+      "source_note": "Core controls are being implemented successfully.",
+      "synthetic": true,
+      "synthetic_addition": [
+        "warning",
+        "critical",
+        "owner"
+      ],
+      "provenance": {
+        "source_file": "Core Governance KPI.docx",
+        "location": "Q2 dashboard row: Control Completion"
+      },
+      "source_trend": "Positive"
+    },
+    {
+      "id": "kpi-audit-readiness",
+      "name": "Audit Readiness",
+      "unit": "percent",
+      "direction": "higher_is_better",
+      "target": {
+        "operator": "gt",
+        "value": 90
+      },
+      "warning": {
+        "operator": "lt",
+        "value": 90
+      },
+      "critical": {
+        "operator": "lt",
+        "value": 60
+      },
+      "owner": "persona-audit",
+      "observations": {
+        "2026-Q1": 50,
+        "2026-Q2": 70
+      },
+      "source_note": "Progress is steady but slower than anticipated.",
+      "synthetic": true,
+      "synthetic_addition": [
+        "warning",
+        "critical",
+        "owner"
+      ],
+      "provenance": {
+        "source_file": "Core Governance KPI.docx",
+        "location": "Q2 dashboard row: Audit Readiness"
+      },
+      "source_trend": "Moderate"
+    },
+    {
+      "id": "kpi-remediation-velocity",
+      "name": "Remediation Velocity",
+      "unit": "percent change in time to close",
+      "direction": "higher_is_better",
+      "target": {
+        "operator": "gte",
+        "value": -10
+      },
+      "warning": {
+        "operator": "lt",
+        "value": -10
+      },
+      "critical": {
+        "operator": "lte",
+        "value": -25
+      },
+      "owner": "persona-governance",
+      "observations": {
+        "2026-Q1": -10,
+        "2026-Q2": -35
+      },
+      "source_note": "Average time to close identified gaps is increasing significantly.",
+      "synthetic": true,
+      "synthetic_addition": [
+        "warning",
+        "critical",
+        "owner"
+      ],
+      "provenance": {
+        "source_file": "Core Governance KPI.docx",
+        "location": "Q2 dashboard row: Remediation Velocity (target: maintain or improve)"
+      },
+      "source_trend": "Critical"
+    },
+    {
+      "id": "kpi-exception-backlog",
+      "name": "Exception Backlog Age",
+      "unit": "days",
+      "direction": "lower_is_better",
+      "target": {
+        "operator": "lt",
+        "value": 30
+      },
+      "warning": {
+        "operator": "gte",
+        "value": 30
+      },
+      "critical": {
+        "operator": "gte",
+        "value": 60
+      },
+      "owner": "persona-governance",
+      "observations": {
+        "2026-Q1": 45,
+        "2026-Q2": 110
+      },
+      "source_note": "Exception queue is growing and ageing rapidly.",
+      "synthetic": true,
+      "synthetic_addition": [
+        "warning",
+        "critical",
+        "owner"
+      ],
+      "provenance": {
+        "source_file": "Core Governance KPI.docx",
+        "location": "Q2 dashboard row: Exception Backlog"
+      },
+      "source_trend": "Critical"
+    },
+    {
+      "id": "kpi-ai-intake",
+      "name": "New AI Intake",
+      "unit": "projects",
+      "direction": "observation",
+      "target": null,
+      "warning": null,
+      "critical": null,
+      "owner": "persona-governance",
+      "observations": {
+        "2026-Q1": 12,
+        "2026-Q2": 18
+      },
+      "out_of_charter_share": {
+        "2026-Q2": 30
+      },
+      "source_note": "30% of Q2 projects came from departments not listed in the charter.",
+      "synthetic": true,
+      "provenance": {
+        "source_file": "Core Governance KPI.docx",
+        "location": "Q2 dashboard row: New AI Project Intake"
+      },
+      "source_trend": "Observation"
+    }
+  ]
+}
