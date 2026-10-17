@@ -47,7 +47,7 @@ The public preview is a synthetic governance workspace. It is not a production d
 | Step Functions | Definition scaffolded and validated. It is not executing in AWS |
 | Database | Baseline migration validated offline. Aurora is not running for the preview |
 | Terraform | Bootstrap and the static preview exist. The application stack (API, database, Cognito, evidence bucket, Step Functions) has not been applied |
-| GitHub Actions | CI validates frontend, backend, Terraform and workflows on every pull request and main push. Protected development, test and production environments still need the OIDC setup in `docs/runbooks/github-and-aws-setup.md` before deploy workflows can apply AWS changes |
+| GitHub Actions | CI validates frontend, backend, Terraform and workflows on every pull request and main push. Main also builds immutable frontend and Lambda zip artifacts as a workflow artifact. Publishing those zips to S3, and the protected development, test and production deploy workflows, still need the OIDC setup in `docs/runbooks/github-and-aws-setup.md` |
 
 Still outstanding before the base can be called deployable: Cognito sign-in, Aurora repositories, the evidence bucket in AWS, council-pack export, the migration runner against a live database, and the threat model.
 

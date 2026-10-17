@@ -160,16 +160,29 @@ jobs:
           else
             echo "ready=true" >> "$GITHUB_OUTPUT"
           fi
+      # OIDC role ARNs may be present before the trust policy is ready. Keep the
+      # workflow green on the built GitHub artifact; S3 publish is best-effort until setup is complete.
       - uses: aws-actions/configure-aws-credentials@v6
+        id: aws
         if: steps.settings.outputs.ready == 'true'
+        continue-on-error: true
         with:
           role-to-assume: ${{ vars.AWS_CI_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION || 'eu-west-2' }}
       - name: Publish commit-addressed artifacts
-        if: steps.settings.outputs.ready == 'true'
+        if: steps.settings.outputs.ready == 'true' && steps.aws.outcome == 'success'
+        continue-on-error: true
         env:
           BUCKET: ${{ vars.ARTIFACT_BUCKET }}
         run: |
           aws s3 cp build/grail-backend.zip "s3://$BUCKET/backend/$GITHUB_SHA/grail-backend.zip" --no-progress
           aws s3 cp build/grail-frontend.zip "s3://$BUCKET/frontend/$GITHUB_SHA/grail-frontend.zip" --no-progress
           aws s3 cp build/build-manifest.json "s3://$BUCKET/manifests/$GITHUB_SHA/build-manifest.json" --no-progress
+      - name: Record artifact publish status
+        if: always() && steps.settings.outputs.ready == 'true'
+        run: |
+          if [ "${{ steps.aws.outcome }}" = "success" ]; then
+            echo "S3 artifact publish attempted after OIDC assume-role." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Built artifacts are available as the workflow artifact. S3 publish was skipped or failed because OIDC assume-role is not yet authorised. See docs/runbooks/github-and-aws-setup.md." >> "$GITHUB_STEP_SUMMARY"
+          fi
