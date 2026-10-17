@@ -238,11 +238,11 @@ def test_records_persist_across_sessions_and_stay_immutable(
     workflow = dependencies.ethics.get(ORG, "financeguard-ai")
     assert workflow is not None
     with pytest.raises((ValidationError, TypeError)):
-        setattr(workflow.events[0], "rationale", "rewritten after the fact")
+        workflow.events[0].rationale = "rewritten after the fact"  # type: ignore[misc]
     stored = dependencies.evidence.get(evidence_id)
     assert stored is not None
     with pytest.raises((ValidationError, TypeError)):
-        setattr(stored.events[0], "detail", "rewritten after the fact")
+        stored.events[0].detail = "rewritten after the fact"  # type: ignore[misc]
 
     for method, path in (
         ("PATCH", "/api/v1/ethics-workflows"),
