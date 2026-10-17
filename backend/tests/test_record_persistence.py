@@ -94,10 +94,12 @@ def test_records_persist_across_sessions_and_stay_immutable(
         },
     )
     assert created_status == 200
-    first_event = created["events"]
-    assert isinstance(first_event, list)
-    original_rationale = first_event[0]["rationale"]
-    original_event_id = first_event[0]["event_id"]
+    first_events = created["events"]
+    assert isinstance(first_events, list)
+    first_event = first_events[0]
+    assert isinstance(first_event, dict)
+    original_rationale = first_event["rationale"]
+    original_event_id = first_event["event_id"]
 
     refreshed_status, refreshed = _call(
         "GET",
@@ -114,9 +116,13 @@ def test_records_persist_across_sessions_and_stay_immutable(
     assert refreshed_status == 200
     assert other_status == 200
     assert refreshed == other_session
-    assert refreshed["events"][0]["event_id"] == original_event_id
-    assert refreshed["events"][0]["rationale"] == original_rationale
-    assert refreshed["events"][0]["status"] == "Recorded"
+    refreshed_events = refreshed["events"]
+    assert isinstance(refreshed_events, list)
+    refreshed_event = refreshed_events[0]
+    assert isinstance(refreshed_event, dict)
+    assert refreshed_event["event_id"] == original_event_id
+    assert refreshed_event["rationale"] == original_rationale
+    assert refreshed_event["status"] == "Recorded"
 
     original_bytes = b"impact assessment extract"
     upload_status, uploaded = _call(
@@ -199,7 +205,7 @@ def test_records_persist_across_sessions_and_stay_immutable(
     assert current["authority"] == "Current"
     assert current["supersedes"] == evidence_id
 
-    for path, payload in (
+    denied_payloads: list[tuple[str, dict[str, object]]] = [
         (
             "/api/v1/ethics-workflows",
             {
@@ -223,19 +229,20 @@ def test_records_persist_across_sessions_and_stay_immutable(
                 "source": "Attempt",
             },
         ),
-    ):
+    ]
+    for path, payload in denied_payloads:
         denied_status, denied = _call("POST", path, READER, payload)
         assert denied_status == 403
         assert denied["code"] == "forbidden"
 
     workflow = dependencies.ethics.get(ORG, "financeguard-ai")
     assert workflow is not None
-    with pytest.raises(ValidationError):
-        workflow.events[0].rationale = "rewritten after the fact"
+    with pytest.raises((ValidationError, TypeError)):
+        setattr(workflow.events[0], "rationale", "rewritten after the fact")
     stored = dependencies.evidence.get(evidence_id)
     assert stored is not None
-    with pytest.raises(ValidationError):
-        stored.events[0].detail = "rewritten after the fact"
+    with pytest.raises((ValidationError, TypeError)):
+        setattr(stored.events[0], "detail", "rewritten after the fact")
 
     for method, path in (
         ("PATCH", "/api/v1/ethics-workflows"),
@@ -261,9 +268,13 @@ def test_records_persist_across_sessions_and_stay_immutable(
         query={"organization_id": str(ORG), "evidence_id": evidence_id},
     )
     assert final_status == 200
-    assert final["events"][0]["event_id"] == original_event_id
-    assert final["events"][0]["rationale"] == original_rationale
-    assert final["events"][0]["status"] == "Recorded"
+    final_events = final["events"]
+    assert isinstance(final_events, list)
+    final_event = final_events[0]
+    assert isinstance(final_event, dict)
+    assert final_event["event_id"] == original_event_id
+    assert final_event["rationale"] == original_rationale
+    assert final_event["status"] == "Recorded"
     assert preserved_status == 200
     assert preserved["recorded_sha256"] == recorded_hash
     assert preserved["events"] == ["Stored", "Superseded"]

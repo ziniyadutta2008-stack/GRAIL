@@ -64,7 +64,7 @@ def test_read_only_cannot_record_an_ethics_step(monkeypatch: pytest.MonkeyPatch)
 def test_ethics_history_is_append_only(monkeypatch: pytest.MonkeyPatch) -> None:
     dependencies = _dependencies(Role.GOVERNANCE_LEAD)
     monkeypatch.setattr(lambda_handler, "_DEPENDENCIES", dependencies)
-    first_payload = {
+    first_payload: dict[str, object] = {
         "organization_id": str(ORG),
         "system_id": "financeguard-ai",
         "step_id": "start",
@@ -170,6 +170,7 @@ def test_evidence_object_records_hash_version_and_presign_plan(
 
     stored = dependencies.evidence.get(evidence_id)
     assert stored is not None
+    bucket_key = stored.bucket_key
     plan = upload_plan(stored)
 
     class FakeS3:
@@ -177,7 +178,7 @@ def test_evidence_object_records_hash_version_and_presign_plan(
             self, ClientMethod: str, Params: dict[str, object], ExpiresIn: int
         ) -> str:
             assert ClientMethod == "put_object"
-            assert Params["Key"] == stored.bucket_key
+            assert Params["Key"] == bucket_key
             checksum = base64.b64encode(hashlib.sha256(content).digest()).decode()
             assert Params["ChecksumSHA256"] == checksum
             assert ExpiresIn == 300
