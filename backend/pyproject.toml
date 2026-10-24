@@ -10,7 +10,7 @@ dependencies = [
     "boto3>=1.43.114",
     "pydantic>=2.14.1",
     "pydantic-settings>=2.16.0",
-    "sqlalchemy>=2.1.5",
+    "sqlalchemy>=2.1.6",
 ]
 
 [build-system]
