@@ -49,7 +49,7 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10.3.0
+      - uses: astral-sh/setup-uv@v10.3.1
         with:
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
@@ -116,7 +116,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-      - uses: astral-sh/setup-uv@v10.3.0
+      - uses: astral-sh/setup-uv@v10.3.1
       - name: Build backend Lambda package
         id: backend
         run: echo "result=$(uv run --project backend python scripts/package_backend.py --output build/grail-backend.zip | tail -n 1)" >> "$GITHUB_OUTPUT"
