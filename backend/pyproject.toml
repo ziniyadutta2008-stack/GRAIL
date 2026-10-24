@@ -24,7 +24,7 @@ dev = [
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
     "ruff>=0.17.1",
-    "types-boto3[ssm]>=1.43.114",
+    "types-boto3[ssm]>=1.43.117",
     "types-jsonschema>=4.26.0.20261006",
 ]
 migrations = [
